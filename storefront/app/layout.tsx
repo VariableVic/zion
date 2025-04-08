@@ -18,7 +18,7 @@ const fontHeading = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AI Storefront",
+  title: "Zion",
   description:
     "An AI-powered shopping assistant for a modern e-commerce experience",
   generator: "v0.dev",

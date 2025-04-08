@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { Bot, Send, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,10 @@ export function ChatInterface() {
     threshold: 700,
     messagesContainerSelector: ".chat-messages-container",
   });
+
+  useEffect(() => {
+    console.log("messages", messages);
+  }, [messages]);
 
   return (
     <div className="flex h-full flex-col">
@@ -96,7 +100,7 @@ export function ChatInterface() {
                     )}
                   >
                     <ChatMessage message={message} />
-                    {message.role !== "user" && (
+                    {message.role === "tool" && (
                       <ChatStreamingUI
                         content={message.content}
                         scrollToBottomIfWithinThreshold={

@@ -8116,6 +8116,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@upstash/vector@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@upstash/vector@npm:1.2.1"
+  checksum: 10c0/336c28cc812a3ec66a19c7a0f718032f2d9f429ac6c8d35211ad59fac9fb66b1c37ec7306e89f46f64abdd387f6274843bc0e990ca5f3fe8e888a2ef2483ac09
+  languageName: node
+  linkType: hard
+
 "@vitejs/plugin-react@npm:^4.2.1":
   version: 4.3.4
   resolution: "@vitejs/plugin-react@npm:4.3.4"
@@ -12392,6 +12399,7 @@ __metadata:
     "@types/node": "npm:^20.0.0"
     "@types/react": "npm:^18.3.2"
     "@types/react-dom": "npm:^18.2.25"
+    "@upstash/vector": "npm:^1.2.1"
     awilix: "npm:^8.0.1"
     jest: "npm:^29.7.0"
     pg: "npm:^8.13.0"

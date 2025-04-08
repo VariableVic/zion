@@ -41,6 +41,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tailwindcss/typography": "latest",
+    "@upstash/vector": "^1.2.1",
     "ai": "latest",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",

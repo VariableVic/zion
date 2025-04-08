@@ -23,20 +23,27 @@ export function ChatStreamingUI({
     // Parse content for special UI components
     const parseContent = () => {
       const newComponents: React.ReactNode[] = [];
+      const parsedContent = JSON.parse(content);
+      console.log("parsedContent", parsedContent);
 
       // Check for product recommendations
-      if (content.includes("[PRODUCT_RECOMMENDATIONS]")) {
-        content = content.replace("[PRODUCT_RECOMMENDATIONS]", "");
+      if (
+        parsedContent.toolInvocations[0].name === "getProductRecommendations"
+      ) {
+        const productRecommendations = JSON.parse(
+          parsedContent.toolInvocations[0].arguments
+        );
+        console.log("productRecommendations", productRecommendations);
         newComponents.push(
           <ProductGrid key="product-grid">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {productRecommendations.map((product: any) => (
               <ProductCard
-                key={i}
-                id={`product-${i}`}
-                name={`Product ${i + 1}`}
-                price={99.99}
-                image="/placeholder.svg?height=200&width=200"
-                description="This is a sample product description."
+                key={product.id}
+                id={`product-${product.id}`}
+                name={product.title}
+                price={product.price}
+                image={product.thumbnail}
+                description={product.description}
               />
             ))}
           </ProductGrid>

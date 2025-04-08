@@ -104,6 +104,9 @@ importers:
       '@tailwindcss/typography':
         specifier: latest
         version: 0.5.16(tailwindcss@3.4.17)
+      '@upstash/vector':
+        specifier: ^1.2.1
+        version: 1.2.1
       ai:
         specifier: latest
         version: 4.3.0(react@19.1.0)(zod@3.24.2)
@@ -1150,6 +1153,9 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+
+  '@upstash/vector@1.2.1':
+    resolution: {integrity: sha512-xKA9qTgbnPsxym/ymgwmaJbJHSTA6b5B1SNyTqJerV8322xn6eJM+p3xZPxKJYDPfSea7RgVxsTkhE9I/mOaOw==}
 
   ai@4.3.0:
     resolution: {integrity: sha512-PxyQYKhWaU3LiZEpeKRaekVonZIbWdKAwgnqm0CSAxy1MFufmYEC5SM5Mc9uiK2DoHcbAL3d1jyaQ2fSDAJL8w==}
@@ -3186,6 +3192,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@ungap/structured-clone@1.3.0': {}
+
+  '@upstash/vector@1.2.1': {}
 
   ai@4.3.0(react@19.1.0)(zod@3.24.2):
     dependencies:

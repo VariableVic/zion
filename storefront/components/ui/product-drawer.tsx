@@ -171,7 +171,7 @@ export function ProductDrawer({
 
           <Separator className="my-4" />
 
-          <DrawerDescription className="text-base leading-relaxed mb-6">
+          <DrawerDescription className="text-base leading-relaxed mb-6 whitespace-pre-wrap overflow-y-auto max-h-[300px]">
             {description}
           </DrawerDescription>
 

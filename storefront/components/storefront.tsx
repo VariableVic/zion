@@ -2,12 +2,12 @@ import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { ChatInterface } from "@/components/chat/chat-interface";
 import { Header } from "@/components/header";
 import { CartProvider } from "@/context/cart-context";
+import { listCategories } from "@/lib/data/categories";
 import { Suspense } from "react";
-import { Card } from "./ui/card";
-import { ProductCard } from "./ui/product-card";
-import { ProductGrid } from "./ui/product-grid";
 
-export function Storefront() {
+export async function Storefront() {
+  const categories = await listCategories();
+
   return (
     <CartProvider>
       <div className="flex h-screen flex-col overflow-hidden">
@@ -15,7 +15,7 @@ export function Storefront() {
         <Suspense
           fallback={<div className="p-8">Loading chat interface...</div>}
         >
-          <ChatInterface />
+          <ChatInterface categories={categories} />
         </Suspense>
         <CartSidebar />
       </div>

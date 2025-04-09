@@ -7,16 +7,26 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
+import { HttpTypes } from "@medusajs/types";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { Bot, Send, User } from "lucide-react";
 import { useEffect } from "react";
-import { Card } from "../ui/card";
 import { AiCanvas } from "../canvas/ai-canvas";
+import { Card } from "../ui/card";
 
-export function ChatInterface() {
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    api: "/api/chat",
-  });
+export function ChatInterface({
+  categories,
+}: {
+  categories: HttpTypes.StoreProductCategory[];
+}) {
+  const { messages, input, handleInputChange, handleSubmit, status, append } =
+    useChat({
+      api: "/api/chat",
+    });
+
+  const handleOptionClick = (option: string) => {
+    append({ role: "user", content: option });
+  };
 
   const isLoading = status === "submitted" || status === "streaming";
 
@@ -66,20 +76,15 @@ export function ChatInterface() {
                     </p>
                     <div className="mt-4 flex flex-wrap justify-center gap-2">
                       {[
-                        "I'm looking for clothes to keep me warm and cosy",
-                        "I'm looking for a new pair of shorts",
+                        "I'm looking to furnish my new living room",
+                        "Show me mid-century modern furniture",
                         "What are your best sellers?",
                       ].map((suggestion) => (
                         <Button
                           key={suggestion}
                           variant="outline"
                           className="rounded-full"
-                          onClick={() => {
-                            handleInputChange({
-                              target: { value: suggestion },
-                            } as any);
-                            handleSubmit({ preventDefault: () => {} } as any);
-                          }}
+                          onClick={() => handleOptionClick(suggestion)}
                         >
                           {suggestion}
                         </Button>
@@ -167,7 +172,11 @@ export function ChatInterface() {
           </div>
         </div>
       </Card>
-      <AiCanvas toolResults={toolResults} />
+      <AiCanvas
+        toolResults={toolResults}
+        categories={categories}
+        handleOptionClick={handleOptionClick}
+      />
     </div>
   );
 }

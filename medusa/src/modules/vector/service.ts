@@ -18,6 +18,10 @@ class VectorService {
     await this.index.upsert(input);
   }
 
+  async delete(input: { id: string }) {
+    await this.index.delete(input.id);
+  }
+
   async query(input: {
     data: string;
     topK: number;

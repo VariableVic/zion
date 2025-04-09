@@ -55,13 +55,21 @@ export class Agent {
     return result.toDataStreamResponse();
   }
 
-  public async generateImage() {
-    const { image } = await generateImage({
-      model: this.openai.image("dall-e-3"),
-      prompt: "A long glass of milk, cartoon style",
-    });
+  public async generateImage(prompt: string) {
+    try {
+      const { image } = await generateImage({
+        model: this.openai.image("dall-e-3"),
+        prompt,
+        size: "1024x1024",
+      });
 
-    return image;
+      return image;
+    } catch (error) {
+      console.error("Error generating image", error);
+      throw new Error(
+        "Failed to generate image. Please try again with a simpler prompt."
+      );
+    }
   }
 
   private async generateProductRecommendationsObject(prompt: string) {
@@ -176,13 +184,13 @@ export class Agent {
   }
 
   private readonly getSystemPrompt = () => `
-  Your a seasoned clothing salesperson.
+  Your a seasoned vintage furniture salesperson.
   Your goal is to help users find products, make recommendations, and assist with the checkout process.
   Be friendly, helpful, and conversational. Focus on understanding the user's needs and providing relevant recommendations.
   Tell stories about the products and the store. Keep yourn answers concise and to the point, but engaging, witty, and fun.
   Do not list products in your text response. Instead, use the getProductRecommendations tool to get product recommendations. 
   This will render a separate UI component with the product recommendations outside of your context.
-  The store sells clothing.
+  The store sells vintage furniture and clothing.
   Today is ${new Date().toLocaleDateString("nl-NL", {
     weekday: "long",
     year: "numeric",

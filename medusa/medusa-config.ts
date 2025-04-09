@@ -17,5 +17,13 @@ module.exports = defineConfig({
     vector: {
       resolve: "./src/modules/vector",
     },
+    file: {
+      resolve: "./src/modules/file",
+      options: {
+        apiKey: process.env.SUPABASE_API_KEY,
+        supabaseUrl: process.env.SUPABASE_URL,
+        bucketName: process.env.SUPABASE_BUCKET_NAME,
+      },
+    },
   },
 });

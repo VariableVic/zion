@@ -1,6 +1,7 @@
 import { createOpenAI, OpenAIProvider } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
-import { embed, generateText, Message, ToolSet } from "ai";
+import { embed, generateObject, generateText, Message, ToolSet } from "ai";
+import { z } from "zod";
 
 export abstract class Worker {
   private readonly messages: Message[] = [];
@@ -47,6 +48,26 @@ export abstract class Worker {
     } catch (error) {
       return `Error: ${error}`;
     }
+  }
+
+  async handleObjectMessage(message: string) {
+    this.addMessageToHistory(message, "user");
+
+    const response = await generateObject({
+      model: this.openai("gpt-4o-mini"),
+      system: this.systemPrompt(),
+      messages: this.messages,
+      schema: z.object({
+        products: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            price: z.number(),
+            best_option: z.boolean(),
+          })
+        ),
+      }),
+    });
   }
 
   async similaritySearch(prompt: string) {

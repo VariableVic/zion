@@ -7,7 +7,10 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const removeUiTags = (content: string) => {
-    return content.replace(/\[[^\]]+\]/g, "").trim();
+    return content
+      .replace(/\[[^\]]+\]/g, "")
+      .replace(/!\((.*?)\)/g, "")
+      .trim();
   };
 
   return (

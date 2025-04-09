@@ -41,7 +41,8 @@ export function ChatStreamingUI({ toolInvocation }: ChatStreamingUIProps) {
                   id={`product-${product.id}`}
                   name={product.title}
                   price={product.price}
-                  image={product.thumbnail}
+                  thumbnail={product.thumbnail}
+                  images={product.images}
                   description={product.description}
                   best_option={product.best_option}
                 />

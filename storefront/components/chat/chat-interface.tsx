@@ -11,7 +11,7 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { Bot, Send, User } from "lucide-react";
 import { useEffect } from "react";
 import { Card } from "../ui/card";
-import { AiCanvas } from "./ai-canvas";
+import { AiCanvas } from "../canvas/ai-canvas";
 
 export function ChatInterface() {
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
@@ -23,7 +23,7 @@ export function ChatInterface() {
   const { scrollViewportRef, showScrollButton, scrollToBottom, handleScroll } =
     useScrollToBottom({
       messages,
-      threshold: 700,
+      threshold: 100,
       messagesContainerSelector: ".chat-messages-container",
     });
 
@@ -38,12 +38,6 @@ export function ChatInterface() {
         toolInvocation !== undefined && toolInvocation.state === "result"
     );
 
-  const followUpOptions = toolResults
-    .filter(
-      (toolInvocation) => toolInvocation.toolName === "giveUserFollowUpOptions"
-    )
-    ?.map((toolInvocation) => toolInvocation.result);
-
   useEffect(() => {
     console.log("messages", messages);
   }, [messages]);
@@ -52,7 +46,7 @@ export function ChatInterface() {
     <div className="flex flex-row overflow-hidden w-full p-4 space-x-4">
       <Card className="overflow-hidden w-1/2">
         <div className="flex h-full flex-col">
-          <ScrollArea className="flex-1 h-[calc(100vh-9rem)]">
+          <ScrollArea className="flex-1 h-[calc(100vh-12rem)]">
             <ScrollAreaPrimitive.Viewport
               ref={scrollViewportRef}
               className="h-full w-full"
@@ -65,9 +59,7 @@ export function ChatInterface() {
                     <div className="rounded-full bg-primary/10 p-4">
                       <Bot className="h-8 w-8 text-primary" />
                     </div>
-                    <h2 className="text-2xl font-bold">
-                      AI Shopping Assistant
-                    </h2>
+                    <h2 className="text-2xl font-bold">Welcome to Zion</h2>
                     <p className="max-w-md text-muted-foreground">
                       Ask me to recommend products, find items that match your
                       needs, or help you check out.
@@ -119,27 +111,6 @@ export function ChatInterface() {
                         )}
                       >
                         <ChatMessage message={message} />
-                        {followUpOptions && (
-                          <div className="flex flex-wrap justify-center gap-2">
-                            {followUpOptions.map((option) => (
-                              <Button
-                                key={option.label}
-                                variant="outline"
-                                className="rounded-full"
-                                onClick={() => {
-                                  handleInputChange({
-                                    target: { value: option.value },
-                                  } as any);
-                                  handleSubmit({
-                                    preventDefault: () => {},
-                                  } as any);
-                                }}
-                              >
-                                {option.label}
-                              </Button>
-                            ))}
-                          </div>
-                        )}
                       </div>
                       {message.role === "user" && (
                         <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border bg-background">
@@ -157,7 +128,7 @@ export function ChatInterface() {
             <Button
               variant="secondary"
               size="icon"
-              className="absolute bottom-20 right-4 z-10 rounded-full shadow-lg"
+              className="absolute bottom-32 right-1/2 mr-8 z-10 rounded-full shadow-lg"
               onClick={scrollToBottom}
             >
               <svg

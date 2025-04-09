@@ -109,14 +109,24 @@ export class Agent {
         //   generatedPrompt
         // );
         console.log("vic logs results", results);
+        const isBestSellers = heading.includes("Best Sellers");
+
         const products = results
-          .filter((result) => result.score > 0.8)
+          .filter((result) => result.score > 0.7)
           .sort((a: any, b: any) => b.score - a.score)
           .map((result, index) => {
             return {
-              ...result.metadata,
-              best_option: index === 0,
-              might_also_like: index === 1,
+              id: result.id,
+              title: result.metadata?.title,
+              price: result.metadata?.price,
+              thumbnail: result.metadata?.thumbnail,
+              description: result.metadata?.description,
+              score: result.score,
+              images: (result.metadata?.images as any[])?.map(
+                (image: any) => image.url
+              ),
+              best_option: !isBestSellers && index === 0,
+              might_also_like: !isBestSellers && index === 1,
             };
           });
 
@@ -131,7 +141,7 @@ export class Agent {
   private getUserClarification() {
     return tool({
       description:
-        "Give user clarification options if their prompt is not clear. This tool will render follow up option buttons based on your response. Example: if a user is interested in shorts, you could ask them if they're looking for men's or women's shorts. The buttons should be in the form of an array of objects with the following properties: label, value. Example: [{ label: 'Men', value: 'men' }, { label: 'Women', value: 'women' }]",
+        "Call this when you need to ask the user for clarification. This tool will render follow up option buttons based on your response. The goal is to give the user quick and easy options to choose from.",
       parameters: z.object({
         buttons: z.array(
           z.object({
@@ -174,8 +184,8 @@ export class Agent {
     minute: "2-digit",
   })}.
   You can use the following tools to help you:
-  - getUserClarification: Render follow up option buttons based on your response. Example: if a user is interested in shorts, but doesn't specify any details, you could ask them if they're looking for sports shorts or casual shorts. 
   - getProductRecommendations: Get product recommendations in the form of an array of objects with the following properties: id, title, description, price, thumbnail.
+  - getUserClarification: Call this when you need to ask the user for clarification. This tool will render follow up option buttons based on your response. The goal is to give the user quick and easy options to choose from.
   You can execute multiple tools in a row, with the results of one tool being used as input for the next tool.
   You can also use the same tool multiple times in a row.
   You can use the same tool multiple times with different parameters.

@@ -2,6 +2,7 @@ import { createOpenAI, OpenAIProvider } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
 import { generateObject, Message, streamText, tool } from "ai";
 import { z } from "zod";
+import { experimental_generateImage as generateImage } from "ai";
 
 export class Agent {
   public messages: Message[] = [];
@@ -43,7 +44,7 @@ export class Agent {
       maxSteps: 5,
       temperature: 1,
       onStepFinish: async (step) => {
-        // console.log("vic logs step", step);
+        // console.log("vic logs step", step)
       },
       onFinish: async (result) => {
         this.addMessageToHistory(result.text, "assistant");
@@ -52,6 +53,15 @@ export class Agent {
     });
 
     return result.toDataStreamResponse();
+  }
+
+  public async generateImage() {
+    const { image } = await generateImage({
+      model: this.openai.image("dall-e-3"),
+      prompt: "A long glass of milk, cartoon style",
+    });
+
+    return image;
   }
 
   private async generateProductRecommendationsObject(prompt: string) {

@@ -13,9 +13,26 @@ export function ChatMessage({ message }: ChatMessageProps) {
       .trim();
   };
 
+  const toolCalls = message.parts
+    ?.map((part) =>
+      part.type === "tool-invocation" ? part.toolInvocation : null
+    )
+    .filter(
+      (toolInvocation) =>
+        toolInvocation !== undefined && toolInvocation?.state === "call"
+    );
+
   return (
-    <div className="prose prose-sm space-y-2 dark:prose-invert break-words [&_ol]:!my-1 [&_ul]:!my-1">
-      <ReactMarkdown>{removeUiTags(message.content)}</ReactMarkdown>
+    <div className="prose-invert prose-sm space-y-2 break-words [&_ol]:!my-1 [&_ul]:!my-1">
+      {message.content.length > 0 ? (
+        <ReactMarkdown>{removeUiTags(message.content)}</ReactMarkdown>
+      ) : (
+        <div className="flex items-center space-x-1">
+          <div className="h-2 w-2 bg-primary rounded-full animate-bounce"></div>
+          <div className="h-2 w-2 bg-primary rounded-full animate-bounce delay-75"></div>
+          <div className="h-2 w-2 bg-primary rounded-full animate-bounce delay-150"></div>
+        </div>
+      )}
     </div>
   );
 }

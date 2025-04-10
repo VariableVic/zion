@@ -10,19 +10,36 @@ import { useChat } from "@ai-sdk/react";
 import { HttpTypes } from "@medusajs/types";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { Bot, Send, User } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiCanvas } from "../canvas/ai-canvas";
 import { Card } from "../ui/card";
 
 export function ChatInterface({
   categories,
+  path,
 }: {
   categories: HttpTypes.StoreProductCategory[];
+  path: string[];
 }) {
+  // const [category, setCategory] = useState(path?.[1] || "");
+
   const { messages, input, handleInputChange, handleSubmit, status, append } =
     useChat({
       api: "/api/chat",
     });
+
+  // useEffect(() => {
+  //   if (!path || path.length === 0) {
+  //     return;
+  //   }
+
+  //   if (path[0] === "category") {
+  //     append({
+  //       role: "user",
+  //       content: `What ${path[1]} would you recommend?`,
+  //     });
+  //   }
+  // }, []);
 
   const handleOptionClick = (option: string) => {
     append({ role: "user", content: option });

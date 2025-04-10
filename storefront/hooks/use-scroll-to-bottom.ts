@@ -1,7 +1,8 @@
-import { useRef, useState, useEffect } from "react";
 import { Message } from "@ai-sdk/react";
+import { useEffect, useRef, useState } from "react";
+
 interface UseScrollToBottomProps {
-  messages: Message[]; // Replace 'any' with your message type if available
+  messages: Message[];
   threshold?: number;
   /**
    * Optional selector for the messages container to observe.

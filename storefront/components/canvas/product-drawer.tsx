@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Badge } from "./badge";
-import { Button } from "./button";
-import { Separator } from "./separator";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 
 interface ProductDrawerProps {
   id?: string;
@@ -87,8 +87,8 @@ export function ProductDrawer({
     <DrawerContent className="max-h-[95vh] overflow-y-hidden">
       <div className="grid md:grid-cols-2 gap-6 p-6 max-h-full overflow-y-hidden">
         {/* Image gallery */}
-        <div className="relative">
-          <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100 h-96">
+        <div className="relative h-[75%]">
+          <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100 h-full">
             {images.length > 0 ? (
               <Image
                 src={images[activeImage] || "/placeholder.svg"}
@@ -148,7 +148,7 @@ export function ProductDrawer({
         </div>
 
         {/* Product info */}
-        <div className="flex flex-col">
+        <div className="flex flex-col max-h-[75%]">
           <div className="flex justify-between items-start">
             <div>
               <Badge variant="outline" className="mb-2">

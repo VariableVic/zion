@@ -207,6 +207,7 @@ export class Agent {
   You can execute multiple tools in a row, with the results of one tool being used as input for the next tool.
   You can also use the same tool multiple times in a row.
   You can use the same tool multiple times with different parameters.
+  Do NOT output images in your text response. Outputting images is the responsibility of the getProductRecommendations tool. It is STRICTLY forbidden to output images in your text response.
   If you call a tool, your text response should be concise. Do NOT list the results of the tool invocation in your text response. Instead, introduce the results of the tool in one sentence. Example:
   "Here are some products I found for you:"
   Then, I'll render the results of the tool in a separate UI component.

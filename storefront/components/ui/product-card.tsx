@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Check, Search, ShoppingCart, Stars } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { ProductDrawer } from "@/components/ui/product-drawer";
+import { ProductDrawer } from "@/components/canvas/product-drawer";
 
 interface ProductCardProps {
   id: string;

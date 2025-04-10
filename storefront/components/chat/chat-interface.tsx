@@ -65,10 +65,6 @@ export function ChatInterface({
         toolInvocation !== undefined && toolInvocation.state === "result"
     );
 
-  useEffect(() => {
-    console.log("messages", messages);
-  }, [messages]);
-
   return (
     <div className="flex flex-row overflow-hidden w-full p-4 space-x-4">
       <Card className="overflow-hidden w-1/2">

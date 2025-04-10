@@ -13,15 +13,6 @@ export function ChatMessage({ message }: ChatMessageProps) {
       .trim();
   };
 
-  const toolCalls = message.parts
-    ?.map((part) =>
-      part.type === "tool-invocation" ? part.toolInvocation : null
-    )
-    .filter(
-      (toolInvocation) =>
-        toolInvocation !== undefined && toolInvocation?.state === "call"
-    );
-
   return (
     <div className="prose-invert prose-sm space-y-2 break-words [&_ol]:!my-1 [&_ul]:!my-1">
       {message.content.length > 0 ? (

@@ -24,6 +24,8 @@ export default async function syncVectorDb({
 
   let productId = data.id;
 
+  console.log("productId from subscriber", productId);
+
   if (name === "product-variant.updated") {
     const {
       data: [variant],
@@ -73,7 +75,14 @@ export default async function syncVectorDb({
     metadata: { count: number };
   };
 
-  for (const product of productsData) {
+  console.log("productsData from subscriber", productsData);
+
+  // Check if productsData is an array, if not, wrap it in []
+  const productsArray = Array.isArray(productsData)
+    ? productsData
+    : [productsData];
+
+  for (const product of productsArray) {
     // Create vector-friendly data representation
     // Combining relevant text fields for semantic search
     const textData = [
@@ -101,6 +110,7 @@ export default async function syncVectorDb({
         price: product.variants[0]?.calculated_price?.calculated_amount,
         variants_count: product.variants?.length || 0,
         status: product.status,
+        categories: product.categories?.map((category) => category?.name),
       },
     });
 

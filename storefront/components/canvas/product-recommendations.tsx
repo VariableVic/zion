@@ -1,18 +1,13 @@
 import { ToolResult } from "ai";
 import { ProductCard } from "../ui/product-card";
 import { ProductGrid } from "../ui/product-grid";
+import { Canvas } from "@/types";
 
 export function ProductRecommendations({
-  toolResults,
+  productRecommendations,
 }: {
-  toolResults: ToolResult<any, any, any>[];
+  productRecommendations: Canvas["product_recommendations"];
 }) {
-  const productRecommendations = toolResults
-    ?.filter(
-      (toolInvocation) =>
-        toolInvocation.toolName === "getProductRecommendations"
-    )
-    ?.map((toolInvocation) => toolInvocation.result);
   if (productRecommendations.length === 0) {
     return null;
   }
@@ -36,8 +31,7 @@ export function ProductRecommendations({
                 {productRecommendation.products.map((product: any) => (
                   <ProductCard
                     key={product.id}
-                    score={product.score}
-                    id={`product-${product.id}`}
+                    id={product.variant_id}
                     name={product.title}
                     price={product.price}
                     thumbnail={product.thumbnail}

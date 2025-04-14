@@ -4,7 +4,7 @@ import {
   DrawerDescription,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useCart } from "@/context/cart-context";
+// import { useCart } from "@/context/cart-context";
 import { cn, formatCurrency } from "@/lib/utils";
 import {
   Check,
@@ -21,6 +21,8 @@ import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
+import ReactMarkdown from "react-markdown";
+import { addToCart } from "@/lib/data/cart";
 
 interface ProductDrawerProps {
   id?: string;
@@ -42,17 +44,15 @@ export function ProductDrawer({
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  const { addItem } = useCart();
+  // const { addItem } = useCart();
 
   const handleAddToCart = () => {
     if (!id) return;
 
-    addItem({
-      id,
-      name,
-      price,
+    addToCart({
+      variantId: id,
       quantity,
-      thumbnail,
+      countryCode: "us",
     });
 
     setIsAdded(true);
@@ -171,9 +171,9 @@ export function ProductDrawer({
 
           <Separator className="my-4" />
 
-          <DrawerDescription className="text-base leading-relaxed mb-6 whitespace-pre-wrap overflow-y-auto max-h-[300px]">
-            {description}
-          </DrawerDescription>
+          <div className="text-base leading-relaxed mb-6 whitespace-pre-wrap overflow-y-auto max-h-[300px]">
+            <ReactMarkdown>{description}</ReactMarkdown>
+          </div>
 
           <div className="mt-auto">
             <div className="mb-4">

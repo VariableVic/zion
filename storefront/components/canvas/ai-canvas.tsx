@@ -6,25 +6,26 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { ProductRecommendations } from "./product-recommendations";
 import { useRef, useState, useEffect } from "react";
+import { Canvas } from "@/types";
 
 export function AiCanvas({
-  toolResults,
   categories,
-  handleOptionClick,
+  canvasId,
 }: {
-  toolResults: ToolResult<any, any, any>[];
   categories: HttpTypes.StoreProductCategory[];
-  handleOptionClick: (option: string) => void;
+  canvasId: string;
 }) {
+  const [canvas, setCanvas] = useState<Canvas | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const threshold = 500;
+  const threshold = 1000;
 
   // Scroll to bottom function
   const scrollToBottom = () => {
     const viewport = scrollViewportRef.current;
     if (!viewport) return;
 
+    console.log("scrolling to bottom!!");
     viewport.scrollTo({
       top: viewport.scrollHeight,
       behavior: "smooth",
@@ -32,26 +33,6 @@ export function AiCanvas({
 
     setShowScrollButton(false);
   };
-
-  // Check if should auto-scroll when toolResults change
-  useEffect(() => {
-    const scrollToBottomIfWithinThreshold = () => {
-      const viewport = scrollViewportRef.current;
-      if (!viewport) return;
-
-      const isScrolledToBottom =
-        viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight <
-        threshold;
-
-      if (isScrolledToBottom) {
-        scrollToBottom();
-      } else {
-        setShowScrollButton(true);
-      }
-    };
-
-    scrollToBottomIfWithinThreshold();
-  }, [toolResults]);
 
   // Handle scroll events
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -62,6 +43,67 @@ export function AiCanvas({
     setShowScrollButton(!isScrolledToBottom);
   };
 
+  useEffect(() => {
+    if (!canvasId) return;
+
+    // Create an EventSource connection to the SSE endpoint
+    const eventSource = new EventSource(`/api/canvas/${canvasId}/stream`);
+
+    // Handle incoming messages
+    eventSource.onmessage = (event) => {
+      // Check if should auto-scroll when canvas change
+      const scrollToBottomIfWithinThreshold = () => {
+        const viewport = scrollViewportRef.current;
+        if (!viewport) return;
+
+        const isScrolledToBottom =
+          viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight <
+          threshold;
+
+        console.log("vic logs isScrolledToBottom", isScrolledToBottom);
+        if (isScrolledToBottom) {
+          console.log("vic logs scrollToBottom");
+          scrollToBottom();
+        } else {
+          console.log("vic logs setShowScrollButton");
+          setShowScrollButton(true);
+        }
+      };
+
+      try {
+        const data = JSON.parse(event.data);
+        const newCanvas = data.canvas;
+        setCanvas(newCanvas);
+        setTimeout(() => {
+          scrollToBottomIfWithinThreshold();
+        }, 10);
+      } catch (error) {
+        console.error("Error parsing SSE data:", error);
+      }
+    };
+
+    // Handle connection open
+    eventSource.onopen = () => {
+      console.log("vic logs eventSource.onopen");
+    };
+
+    // Handle errors
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+
+      // Attempt to reconnect after a delay
+      setTimeout(() => {
+        eventSource.close();
+        // The browser will automatically attempt to reconnect
+      }, 5000);
+    };
+
+    // Clean up the connection when the component unmounts
+    return () => {
+      eventSource.close();
+    };
+  }, [canvasId]);
+
   return (
     <Card
       className="h-full p-6 overflow-auto w-1/2 space-y-4"
@@ -69,30 +111,15 @@ export function AiCanvas({
       onScroll={handleScroll}
     >
       <div className="flex flex-col gap-4 ai-canvas">
-        <p className="text-lg font-bold">Browse by category</p>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category.id}
-              variant="outline"
-              className="rounded-full"
-              onClick={() =>
-                handleOptionClick(
-                  `What ${category.name.toLowerCase()} would you recommend?`
-                )
-              }
-            >
-              {category.name}
-            </Button>
-          ))}
-        </div>
-
-        {toolResults.length > 0 && (
-          <>
-            <ProductRecommendations toolResults={toolResults} />
-            {/* <pre>{JSON.stringify(toolResults, null, 2)}</pre> */}
-          </>
-        )}
+        {canvas?.product_recommendations?.length &&
+          canvas?.product_recommendations?.length > 0 && (
+            <>
+              <ProductRecommendations
+                productRecommendations={canvas.product_recommendations}
+              />
+              {/* <pre>{JSON.stringify(toolResults, null, 2)}</pre> */}
+            </>
+          )}
       </div>
       {showScrollButton && (
         <Button

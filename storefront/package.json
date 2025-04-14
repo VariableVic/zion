@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -43,6 +43,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tailwindcss/typography": "latest",
+    "@upstash/redis": "^1.34.7",
     "@upstash/vector": "^1.2.1",
     "ai": "latest",
     "autoprefixer": "^10.4.20",

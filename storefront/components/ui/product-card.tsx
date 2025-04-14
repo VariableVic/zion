@@ -1,15 +1,15 @@
 "use client";
 
+import { ProductDrawer } from "@/components/canvas/product-drawer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import { useCart } from "@/context/cart-context";
-import { formatCurrency } from "@/lib/utils";
+import { addToCart } from "@/lib/data/cart";
+import { cn, formatCurrency } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check, Search, ShoppingCart, Stars } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { ProductDrawer } from "@/components/canvas/product-drawer";
+import { useEffect, useRef, useState } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -20,7 +20,6 @@ interface ProductCardProps {
   description: string;
   best_option?: boolean;
   might_also_like?: boolean;
-  score?: number;
 }
 
 export function ProductCard({
@@ -32,41 +31,60 @@ export function ProductCard({
   description,
   best_option,
   might_also_like,
-  score,
 }: ProductCardProps) {
-  const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const [longTitle, setLongTitle] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
-  const handleAddToCart = () => {
-    addItem({
-      id,
-      name,
-      price,
+  const handleAddToCart = async () => {
+    setAdded(true);
+
+    await addToCart({
+      variantId: id,
       quantity: 1,
-      thumbnail,
+      countryCode: "us",
     });
 
-    setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const cardTitleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const longTitle =
+      cardTitleRef?.current?.clientHeight &&
+      cardTitleRef?.current?.clientHeight > 24;
+
+    setLongTitle(longTitle || false);
+  }, []);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 }}
       whileHover={{ y: -5 }}
+      className="select-none"
     >
       <Drawer>
-        <Card className="overflow-hidden relative">
-          <DrawerTrigger>
-            <div className="w-full h-full aspect-square overflow-hidden relative group">
+        <Card className="flex flex-col overflow-hidden relative min-h-full justify-between">
+          <DrawerTrigger asChild>
+            <div className="w-full h-fit aspect-square overflow-hidden relative group">
               <Image
                 src={thumbnail || "/placeholder.svg"}
                 alt={name}
-                width={300}
-                height={300}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                width={210}
+                height={210}
+                quality={20}
+                priority
+                className={cn(
+                  "h-full w-full object-cover transition-all duration-100 group-hover:scale-105",
+                  {
+                    "opacity-100": loaded,
+                    "opacity-0": !loaded,
+                  }
+                )}
+                onLoad={() => setLoaded(true)}
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Search className="h-10 w-10 text-white" />
@@ -85,17 +103,19 @@ export function ProductCard({
             </div>
           </DrawerTrigger>
 
-          <CardContent className="p-4">
-            <h3 className="font-medium">{name}</h3>
-            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-              {description}
-              {score && (
-                <span className="text-xs text-muted-foreground">
-                  {score.toFixed(2)}
-                </span>
+          <CardContent className="p-4 flex flex-col gap-2 h-full justify-between">
+            <h3 className="font-medium line-clamp-2" ref={cardTitleRef}>
+              {name}
+            </h3>
+            <p
+              className={cn(
+                "text-sm text-muted-foreground",
+                longTitle ? "line-clamp-3" : "line-clamp-4"
               )}
+            >
+              {description}
             </p>
-            <p className="mt-2 font-medium">{formatCurrency(price)}</p>
+            <p className="font-medium">{formatCurrency(price)}</p>
           </CardContent>
           <CardFooter className="p-4 pt-0">
             <Button

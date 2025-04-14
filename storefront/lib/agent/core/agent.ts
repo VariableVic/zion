@@ -1,8 +1,14 @@
+import { addToCanvas } from "@/lib/data/canvas";
 import { createOpenAI, OpenAIProvider } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
-import { generateObject, Message, streamText, tool } from "ai";
+import {
+  experimental_generateImage as generateImage,
+  generateObject,
+  Message,
+  streamText,
+  tool,
+} from "ai";
 import { z } from "zod";
-import { experimental_generateImage as generateImage } from "ai";
 
 export class Agent {
   public messages: Message[] = [];
@@ -72,7 +78,7 @@ export class Agent {
     }
   }
 
-  private async generateProductRecommendationsObject(prompt: string) {
+  public async generateObject(prompt: string) {
     const result = await generateObject({
       model: this.openai("gpt-4o-mini"),
       prompt,
@@ -100,7 +106,7 @@ export class Agent {
   private getTools() {
     return {
       getProductRecommendations: this.getProductRecommendations(),
-      getUserClarification: this.getUserClarification(),
+      // getUserClarification: this.getUserClarification(),
     };
   }
 
@@ -135,6 +141,7 @@ export class Agent {
           .map((result, index) => {
             return {
               id: result.id,
+              variant_id: (result.metadata?.variants as any[])[0]?.id,
               title: result.metadata?.title,
               price: result.metadata?.price,
               thumbnail: result.metadata?.thumbnail,
@@ -147,6 +154,19 @@ export class Agent {
               might_also_like: !isBestSellers && index === 1,
             };
           });
+
+        try {
+          await addToCanvas({
+            product_recommendations: [
+              {
+                heading,
+                products,
+              },
+            ],
+          });
+        } catch (error) {
+          console.error("Error adding to canvas", error);
+        }
 
         return {
           products,
@@ -177,7 +197,7 @@ export class Agent {
   private async similaritySearch(prompt: string) {
     const results = await this.index.query({
       data: prompt,
-      topK: 3,
+      topK: 6,
       includeMetadata: true,
     });
     return results;

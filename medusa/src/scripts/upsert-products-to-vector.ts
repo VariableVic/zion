@@ -19,21 +19,10 @@ interface VariantWithPrice extends ProductVariant {
 
 export default async function upsertProductsToVector({ container }: ExecArgs) {
   // Resolve services
-  const productService = container.resolve(ModuleRegistrationName.PRODUCT);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
   const vectorService = container.resolve(VECTOR_MODULE_KEY) as VectorService;
 
   logger?.info("Fetching all products...");
-
-  // Fetch all products (getting first 1000 products)
-  // const [products, count] = await productService.listAndCountProducts(
-  //   {},
-  //   {
-  //     take: 1000,
-  //     skip: 0,
-  //     relations: ["variants", "tags", "categories", "images", "prices"],
-  //   }
-  // );
 
   const { data: regions } = await query.graph({
     entity: "region",
@@ -100,6 +89,7 @@ export default async function upsertProductsToVector({ container }: ExecArgs) {
         price: product.variants[0]?.calculated_price?.calculated_amount,
         variants_count: product.variants?.length || 0,
         status: product.status,
+        categories: product.categories?.map((category) => category?.name),
       },
     });
 

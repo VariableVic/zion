@@ -1,102 +1,186 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { setAddresses } from "@/lib/data/cart";
+import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
 
-export function ShippingForm() {
+export function ShippingForm({ onClose }: { onClose: () => void }) {
   const [formState, setFormState] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
+    first_name: "",
+    last_name: "",
+    address_1: "",
     city: "",
     state: "",
-    zipCode: "",
-    country: "US",
-  })
+    zip_code: "",
+    country: "us",
+    phone: "",
+    company: "",
+    email: "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormState((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    console.log(name, value);
+    setFormState((prev) => ({ ...prev, [name]: value }));
+    console.log({ formState });
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormState((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, you would handle the shipping info submission here
-    console.log("Shipping info:", formState)
-  }
+    console.log(name, value);
+    setFormState((prev) => ({ ...prev, [name]: value }));
+    console.log({ formState });
+  };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Shipping Information</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" name="firstName" value={formState.firstName} onChange={handleChange} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" name="lastName" value={formState.lastName} onChange={handleChange} required />
-            </div>
-          </div>
-
+    <form
+      className="flex flex-col space-y-6 h-full"
+      action={async (formData) => {
+        await setAddresses(formState, formData);
+      }}
+    >
+      <div className="flex flex-col space-y-4">
+        <h2 className="text-base font-semibold">Contact Details</h2>
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" name="address" value={formState.address} onChange={handleChange} required />
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={formState.email}
+              onChange={handleChange}
+              required
+            />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              value={formState.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col space-y-4">
+        <h2 className="text-base font-semibold">Shipping Information</h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input id="city" name="city" value={formState.city} onChange={handleChange} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="state">State/Province</Label>
-              <Input id="state" name="state" value={formState.state} onChange={handleChange} required />
-            </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="first_name">First Name</Label>
+            <Input
+              id="first_name"
+              name="first_name"
+              value={formState.first_name}
+              onChange={handleChange}
+              required
+            />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="last_name">Last Name</Label>
+            <Input
+              id="last_name"
+              name="last_name"
+              value={formState.last_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="zipCode">ZIP/Postal Code</Label>
-              <Input id="zipCode" name="zipCode" value={formState.zipCode} onChange={handleChange} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Select value={formState.country} onValueChange={(value) => handleSelectChange("country", value)}>
-                <SelectTrigger id="country">
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="US">United States</SelectItem>
-                  <SelectItem value="CA">Canada</SelectItem>
-                  <SelectItem value="UK">United Kingdom</SelectItem>
-                  <SelectItem value="AU">Australia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="address_1">Address</Label>
+          <Input
+            id="address_1"
+            name="address_1"
+            value={formState.address_1}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="city">City</Label>
+            <Input
+              id="city"
+              name="city"
+              value={formState.city}
+              onChange={handleChange}
+              required
+            />
           </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full">
-            Continue to Payment
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
-  )
+          <div className="space-y-2">
+            <Label htmlFor="state">State/Province</Label>
+            <Input
+              id="state"
+              name="state"
+              value={formState.state}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="zip_code">ZIP/Postal Code</Label>
+            <Input
+              id="zip_code"
+              name="zip_code"
+              value={formState.zip_code}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="country">Country</Label>
+            <Select
+              name="country"
+              value={formState.country}
+              onValueChange={(value) => handleSelectChange("country", value)}
+            >
+              <SelectTrigger id="country">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="us">United States</SelectItem>
+                <SelectItem value="ca">Canada</SelectItem>
+                <SelectItem value="uk">United Kingdom</SelectItem>
+                <SelectItem value="au">Australia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+      <Separator />
+      <div className="grid grid-cols-4 gap-2 items-end">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          className="col-span-1"
+          type="button"
+        >
+          Cancel
+        </Button>
+        <Button type="submit" className="col-span-3">
+          Continue to Payment
+        </Button>
+      </div>
+    </form>
+  );
 }
-

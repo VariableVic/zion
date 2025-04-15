@@ -43,11 +43,11 @@ export function CategoryBar({
             <Button
               key={category.id}
               variant="outline"
-              className="rounded-full"
+              className="rounded-full select-none"
               disabled={isLoading}
               onClick={() =>
                 handleOptionClick(
-                  `Show me your best ${category.name.toLowerCase()}.`
+                  `Show me your best ${category.name.toLowerCase()}`
                 )
               }
             >
@@ -62,6 +62,7 @@ export function CategoryBar({
         className="rounded-full"
         onClick={resetCanvas}
         disabled={isResetting || isLoading}
+        title="Reset the conversation and canvas"
       >
         <RefreshCcw
           className={cn("w-3 h-3", {

@@ -10,7 +10,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
     return content
       .replace(/\[[^\]]+\]/g, "")
       .replace(/!\((.*?)\)/g, "")
-      .replace(/([!./*])([A-Z])/g, "$1\n\n$2")
+      .replace(/([!.])([A-Z])/g, "$1\n\n$2")
       .trim();
   };
 

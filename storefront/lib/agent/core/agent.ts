@@ -1,4 +1,6 @@
 import { addToCanvas } from "@/lib/data/canvas";
+import { retrieveCart } from "@/lib/data/cart";
+import { formatCurrency } from "@/lib/utils";
 import { createOpenAI, OpenAIProvider } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
 import {
@@ -16,7 +18,6 @@ export class Agent {
   private readonly index: Index;
 
   constructor() {
-    this.addMessageToHistory(this.getSystemPrompt(), "system");
     this.openai = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -44,7 +45,7 @@ export class Agent {
 
     const result = streamText({
       model: this.openai("gpt-4o-mini"),
-      system: this.getSystemPrompt(),
+      system: await this.getSystemPrompt(),
       messages: this.messages,
       tools: this.getTools(),
       maxSteps: 5,
@@ -55,6 +56,7 @@ export class Agent {
       onFinish: async (result) => {
         this.addMessageToHistory(result.text, "assistant");
       },
+
       toolChoice: "auto",
     });
 
@@ -106,7 +108,9 @@ export class Agent {
   private getTools() {
     return {
       getProductRecommendations: this.getProductRecommendations(),
-      // getUserClarification: this.getUserClarification(),
+      initializeCheckout: this.initializeCheckout(),
+      getCart: this.getCart(),
+      followUpPromptSuggestions: this.followUpPromptSuggestions(),
     };
   }
 
@@ -124,15 +128,6 @@ export class Agent {
       }),
       execute: async ({ prompt, heading }) => {
         const results = await this.similaritySearch(prompt);
-        // const productRecommendations = results.map((result) => result.metadata);
-        // const generatedPrompt = `Sort the following products based on the user's prompt: ${prompt}, starting with the most relevant product.
-        // Mark the most relevant product as "best_option: true".
-        // Remove items that don't match the user's prompt at all.
-        // Products: ${JSON.stringify(productRecommendations)}`;
-        // const result = await this.generateProductRecommendationsObject(
-        //   generatedPrompt
-        // );
-        console.log("vic logs results", results);
         const isBestSellers = heading.includes("Best Sellers");
 
         const products = results
@@ -176,20 +171,70 @@ export class Agent {
     });
   }
 
-  private getUserClarification() {
+  private followUpPromptSuggestions() {
     return tool({
       description:
-        "Call this when you need to ask the user for clarification. This tool will render follow up option buttons based on your response. The goal is to give the user quick and easy options to choose from.",
+        "Give the user follow up prompt suggestions. This will render buttons in the chat for the user to select from for a quick response. Call this tool when you ask a clarifying question.",
       parameters: z.object({
-        buttons: z.array(
-          z.object({
-            label: z.string(),
-            value: z.string(),
+        options: z.array(
+          z.string({
+            description:
+              "The response suggestions to display to the user. Example: ['Yes', 'No'] or ['Vintage', 'Modern', 'Minimalist']",
           })
         ),
       }),
-      execute: async ({ buttons }) => {
-        return buttons;
+      execute: async ({ options }) => {
+        return options;
+      },
+    });
+  }
+
+  private initializeCheckout() {
+    return tool({
+      description:
+        "Initialize the checkout process for the customer. This will render a checkout form in the canvas for the user to fill out.",
+      parameters: z.object({}),
+      execute: async () => {
+        try {
+          await addToCanvas({
+            checkout_initialized: true,
+          });
+        } catch (error) {
+          console.error("Error adding to canvas", error);
+          return "Error initializing checkout because of: " + error;
+        }
+
+        return "Checkout initialized";
+      },
+    });
+  }
+
+  private getCart() {
+    return tool({
+      description: "Get the contents of the current cart",
+      parameters: z.object({}),
+      execute: async () => {
+        return await retrieveCart()
+          .then((cart) => {
+            const items = cart?.items?.map((item) => {
+              return {
+                title: item.product_title,
+                price: formatCurrency(
+                  item.variant?.calculated_price?.calculated_amount || 0
+                ),
+                quantity: item.quantity,
+              };
+            });
+            return {
+              items,
+              item_total: formatCurrency(cart?.item_total || 0),
+              total: formatCurrency(cart?.total || 0),
+            };
+          })
+          .catch((error) => {
+            console.error("Error retrieving cart", error);
+            return "Error retrieving cart. Reason: " + error;
+          });
       },
     });
   }
@@ -203,8 +248,8 @@ export class Agent {
     return results;
   }
 
-  private readonly getSystemPrompt = () => `
-You are a seasoned, charming vintage furniture and clothing salesperson working at a stylish boutique. Your goal is to help users discover products, provide tailored recommendations, and guide them smoothly through the checkout process.
+  private readonly getSystemPrompt = async () => `
+You are a seasoned, charming vintage furniture salesperson working at a stylish boutique. Your goal is to help users discover products, provide tailored recommendations, and guide them smoothly through the checkout process.
 
 Your tone should always be:
 
@@ -228,10 +273,13 @@ ABSOLUTE RULES — DO NOT BREAK THESE:
 
 Use tools instead of manual responses for product recommendations or clarifications. You have access to the following tools:
 
+- followUpPromptSuggestions: Use this to give the user follow up prompt suggestions. This will render buttons in the chat for the user to select from for a quick response.
 - getProductRecommendations: Use this to retrieve product recommendations. You'll receive an array of objects with product properties like: id, title, description, price, thumbnail. These will render as a visual product grid outside of your context.
 Important: When using this tool, introduce the results briefly, e.g.:
 "I've added a few pieces that might interest you to the canvas."
 Do not describe or list the results — just call the tool.
+- getCart: Use this to retrieve the contents of the current cart. You'll receive an object with the following properties: items, item_total, total. Use this to inform your recommendations. Don't recommend items that are already in the cart.
+- initializeCheckout: Use this to initialize the checkout process. This will render a checkout form in the canvas for the user to fill out.
 
 You can:
 

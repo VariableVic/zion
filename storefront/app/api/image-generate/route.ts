@@ -11,8 +11,6 @@ const agent = new Agent();
 export async function GET(req: NextRequest) {
   const prompt = req.nextUrl.searchParams.get("prompt");
 
-  console.log("prompt", prompt);
-
   if (!prompt) {
     return NextResponse.json({ Message: "No prompt provided", status: 400 });
   }
@@ -27,7 +25,7 @@ export async function GET(req: NextRequest) {
     );
     return NextResponse.json({ Message: "Success", status: 201 });
   } catch (error) {
-    console.log("Error occured ", error);
+    console.error("Error occured ", error);
     return NextResponse.json({ Message: "Failed", status: 500 });
   }
 }

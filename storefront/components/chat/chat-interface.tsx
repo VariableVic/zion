@@ -15,13 +15,11 @@ import { CategoryBar } from "./category-bar";
 
 export function ChatInterface({
   categories,
-  path,
+  cart,
 }: {
   categories: HttpTypes.StoreProductCategory[];
-  path: string[];
+  cart?: HttpTypes.StoreCart | null;
 }) {
-  // const [category, setCategory] = useState(path?.[1] || "");
-
   const {
     append,
     handleInputChange,
@@ -35,22 +33,16 @@ export function ChatInterface({
     api: "/api/chat",
   });
 
-  // useEffect(() => {
-  //   if (!path || path.length === 0) {
-  //     return;
-  //   }
-
-  //   if (path[0] === "category") {
-  //     append({
-  //       role: "user",
-  //       content: `What ${path[1]} would you recommend?`,
-  //     });
-  //   }
-  // }, []);
-
   const handleOptionClick = (option: string) => {
     append({ role: "user", content: option });
   };
+
+  const suggestions = [
+    "I'm looking to furnish my new living room",
+    "Show me mid-century modern furniture",
+    "What are your best sellers?",
+    cart?.items?.length ? "What would you recommend based on my cart?" : null,
+  ].filter((suggestion) => suggestion !== null);
 
   const isLoading = status === "submitted" || status === "streaming";
 
@@ -77,27 +69,28 @@ export function ChatInterface({
         <ScrollArea className="flex-1 h-[calc(100vh-15rem)]">
           <ScrollAreaPrimitive.Viewport
             ref={scrollViewportRef}
-            className="h-full w-full"
-            style={{ height: "calc(100vh - 15rem)" }}
+            className="w-full scroll-smooth h-[calc(100vh-15rem)]"
             onScroll={handleScroll}
           >
             <div className="flex flex-col gap-6 p-4 pb-20 md:p-8 chat-messages-container">
               {messages.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center space-y-4 p-8 text-center">
-                  <div className="rounded-full bg-primary/10 p-4">
+                  <div className="rounded-full bg-primary/10 p-4 relative after:absolute after:inset-0 after:rounded-full after:animate-pulse after:bg-primary/20 after:blur-md after:-z-10 before:absolute before:inset-0 before:rounded-full before:animate-[ping_3s_ease-in-out_infinite] before:bg-primary/10 before:blur-sm before:-z-10">
                     <Bot className="h-8 w-8 text-primary" />
                   </div>
-                  <h2 className="text-2xl font-bold">Welcome to Zion</h2>
+                  <h2 className="text-2xl font-bold">
+                    Welcome to Zion: The Generative Storefront
+                  </h2>
                   <p className="max-w-md text-muted-foreground">
                     Ask me to recommend products, find items that match your
                     needs, or help you check out.
                   </p>
+                  <p className="max-w-md text-muted-foreground">
+                    I'm currently connected to a{" "}
+                    <strong>vintage furniture store</strong>.
+                  </p>
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
-                    {[
-                      "I'm looking to furnish my new living room",
-                      "Show me mid-century modern furniture",
-                      "What are your best sellers?",
-                    ].map((suggestion) => (
+                    {suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
                         variant="outline"

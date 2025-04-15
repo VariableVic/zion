@@ -8,72 +8,49 @@ import { ProductCard } from "@/components/ui/product-card";
 import { ProductGrid } from "@/components/ui/product-grid";
 import { ShippingForm } from "@/components/checkout/shipping-form";
 import { PaymentForm } from "@/components/checkout/payment-form";
+import { Button } from "../ui/button";
 
 interface ChatStreamingUIProps {
   toolInvocation: ToolInvocation;
+  handleOptionClick: (option: string) => void;
 }
 
-export function ChatStreamingUI({ toolInvocation }: ChatStreamingUIProps) {
+export function ChatStreamingUI({
+  toolInvocation,
+  handleOptionClick,
+}: ChatStreamingUIProps) {
   const [components, setComponents] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
     // Parse content for special UI components
     const parseContent = () => {
       const newComponents: React.ReactNode[] = [];
-      console.log("vic logs toolInvocation", toolInvocation);
 
       // Check for product recommendations
       if (
-        toolInvocation.toolName === "getProductRecommendations" &&
+        toolInvocation.toolName === "followUpPromptSuggestions" &&
         toolInvocation.state === "result"
       ) {
-        const productRecommendations = toolInvocation.result;
+        const followUpPromptSuggestions = toolInvocation.result;
 
         newComponents.push(
-          <div className="flex flex-col gap-4" key="product-recommendations">
-            <p className="text-lg font-bold">
-              Results for {productRecommendations.heading}
-            </p>
-            <ProductGrid key="product-grid">
-              {productRecommendations.products.map((product: any) => (
-                <ProductCard
-                  key={product.id}
-                  id={`product-${product.id}`}
-                  name={product.title}
-                  price={product.price}
-                  thumbnail={product.thumbnail}
-                  images={product.images}
-                  description={product.description}
-                  best_option={product.best_option}
-                />
-              ))}
-            </ProductGrid>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {followUpPromptSuggestions.options.map((option: any) => (
+              <Button
+                key={option}
+                variant="outline"
+                className="rounded-full"
+                onClick={() => handleOptionClick(option)}
+              >
+                {option}
+              </Button>
+            ))}
           </div>
         );
-
-        // scrollToBottomIfWithinThreshold();
       }
-
-      // // Check for shipping form
-      // if (content.includes("[SHIPPING_FORM]")) {
-      //   content = content.replace("[SHIPPING_FORM]", "");
-      //   newComponents.push(<ShippingForm key="shipping-form" />);
-
-      //   // scrollToBottomIfWithinThreshold();
-      // }
-
-      // // Check for payment form
-      // if (content.includes("[PAYMENT_FORM]")) {
-      //   content = content.replace("[PAYMENT _FORM]", "");
-      //   newComponents.push(<PaymentForm key="payment-form" />);
-
-      //   // scrollToBottomIfWithinThreshold();
-      // }
 
       setComponents((components) => [...components, ...newComponents]);
     };
-
-    console.log("vic logs components", components);
 
     parseContent();
   }, [toolInvocation]);

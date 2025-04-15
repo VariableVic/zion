@@ -69,7 +69,7 @@ export function ProductCard({
       <Drawer>
         <Card className="flex flex-col overflow-hidden relative min-h-full justify-between">
           <DrawerTrigger asChild>
-            <div className="w-full h-fit aspect-square overflow-hidden relative group">
+            <div className="w-full h-fit aspect-square overflow-hidden relative group cursor-pointer">
               <Image
                 src={thumbnail || "/placeholder.svg"}
                 alt={name}

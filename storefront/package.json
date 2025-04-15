@@ -43,6 +43,8 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tailwindcss/typography": "latest",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.8.1",
     "@upstash/redis": "^1.34.7",
     "@upstash/vector": "^1.2.1",
     "ai": "latest",

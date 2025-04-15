@@ -88,7 +88,13 @@ export async function GET(
       req.signal.addEventListener("abort", async () => {
         // Remove client from active clients on disconnect
         await redis.srem(activeClientsKey, clientId);
-        controller.close();
+        try {
+          controller.close();
+        } catch (error) {
+          console.warn(
+            "Controller was already closed, proceeding with cleanup"
+          );
+        }
       });
     },
   });

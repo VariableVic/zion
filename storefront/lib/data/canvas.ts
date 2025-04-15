@@ -21,8 +21,6 @@ export async function addToCanvas(input: Partial<Canvas>) {
 
   const canvasCacheTag = await getCacheTag("canvas");
 
-  console.log("vic logs canvasCacheTag", canvasCacheTag);
-
   const response = await fetch(`${baseUrl}/api/canvas/${canvasId}`, {
     method: "POST",
     body: JSON.stringify({

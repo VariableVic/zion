@@ -29,14 +29,6 @@ export function Header({
   );
   const itemRef = useRef(itemCount);
 
-  const router = useRouter();
-
-  const handleCategoryClick = (handle: string) => {
-    router.replace(`/category/${handle}`, {
-      scroll: false,
-    });
-  };
-
   useEffect(() => {
     if (itemCount !== itemRef.current) {
       setIsCartOpen(true);
@@ -54,25 +46,11 @@ export function Header({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex  gap-4 h-16 items-center">
+      <header className="sticky h-16 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex gap-4 h-full items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-heading text-2xl">Zion</span>
           </Link>
-          {/* {categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant="outline"
-                className="rounded-full"
-                onClick={() => handleCategoryClick(category.handle)}
-              >
-                {category.name}
-              </Button>
-            ))}
-          </div>
-        )} */}
 
           <div className="flex flex-1 items-center justify-end gap-4">
             <ThemeToggle />

@@ -343,23 +343,25 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
       throw new Error("No existing cart found when setting addresses");
     }
 
+    console.log({ formData });
+    console.log(formData.get("country"));
+
     const data = {
       shipping_address: {
-        first_name: formData.get("shipping_address.first_name"),
-        last_name: formData.get("shipping_address.last_name"),
-        address_1: formData.get("shipping_address.address_1"),
+        first_name: formData.get("first_name"),
+        last_name: formData.get("last_name"),
+        address_1: formData.get("address_1"),
         address_2: "",
-        company: formData.get("shipping_address.company"),
-        postal_code: formData.get("shipping_address.postal_code"),
-        city: formData.get("shipping_address.city"),
-        country_code: formData.get("shipping_address.country_code"),
-        province: formData.get("shipping_address.province"),
-        phone: formData.get("shipping_address.phone"),
+        postal_code: formData.get("zip_code"),
+        city: formData.get("city"),
+        country_code: formData.get("country"),
+        province: formData.get("state"),
+        phone: formData.get("phone"),
       },
       email: formData.get("email"),
     } as any;
 
-    const sameAsBilling = formData.get("same_as_billing");
+    const sameAsBilling = "on";
     if (sameAsBilling === "on") data.billing_address = data.shipping_address;
 
     if (sameAsBilling !== "on")
@@ -368,7 +370,6 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         last_name: formData.get("billing_address.last_name"),
         address_1: formData.get("billing_address.address_1"),
         address_2: "",
-        company: formData.get("billing_address.company"),
         postal_code: formData.get("billing_address.postal_code"),
         city: formData.get("billing_address.city"),
         country_code: formData.get("billing_address.country_code"),

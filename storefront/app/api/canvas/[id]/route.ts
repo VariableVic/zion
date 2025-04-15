@@ -36,8 +36,6 @@ export const POST = async (
 
   const canvas = ((await redis.get(canvasId)) || {}) as Canvas;
 
-  console.log("vic logs canvas", canvas);
-
   const { input } = await req.json();
 
   const newCanvas = {
@@ -58,8 +56,6 @@ export const POST = async (
     }, {} as Partial<Canvas>),
     lastUpdated: Date.now(), // Add a timestamp for tracking changes
   };
-
-  console.log("vic logs newCanvas", newCanvas);
 
   const result = await redis.set(canvasId, newCanvas);
 

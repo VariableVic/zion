@@ -10,7 +10,7 @@ export default async function Home({
   const { path } = await params;
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex h-full min-h-screen flex-col">
       <Suspense fallback={<StorefrontSkeleton />}>
         <Storefront path={path} />
       </Suspense>

@@ -17,6 +17,10 @@ export function CartItem({ item }: CartItemProps) {
 
   const updateQuantity = async (itemId: string, quantity: number) => {
     setIsUpdating(true);
+    if (quantity === 0) {
+      await deleteLineItem(itemId);
+      return;
+    }
     await updateLineItem({ lineId: itemId, quantity });
     setIsUpdating(false);
   };
@@ -25,12 +29,6 @@ export function CartItem({ item }: CartItemProps) {
     setIsUpdating(true);
     await deleteLineItem(itemId);
   };
-
-  const variant = item.variant as HttpTypes.StoreProductVariant & {
-    price: HttpTypes.StorePrice;
-  };
-
-  console.log("vic logs item", item);
 
   return (
     <div className="flex items-start gap-4">

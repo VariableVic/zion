@@ -18,21 +18,37 @@ export function useScrollToBottom({
 }: UseScrollToBottomProps) {
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const prevMessagesLengthRef = useRef<number>(0);
 
   useEffect(() => {
-    scrollToBottomIfWithinThreshold();
+    // Track when new messages are added vs just content updates
+    const newMessageAdded = messages.length > prevMessagesLengthRef.current;
+    prevMessagesLengthRef.current = messages.length;
+
+    // Use RAF to ensure DOM has updated before scrolling
+    requestAnimationFrame(() => {
+      if (newMessageAdded) {
+        // Always scroll to bottom on new message
+        scrollToBottom();
+      } else {
+        scrollToBottomIfWithinThreshold();
+      }
+    });
   }, [messages]);
 
   const scrollToBottom = () => {
     const viewport = scrollViewportRef.current;
     if (!viewport) return;
 
-    viewport.scrollTo({
-      top: viewport.scrollHeight,
-      behavior: "smooth",
+    // Use RAF to ensure DOM is fully updated before scrolling
+    requestAnimationFrame(() => {
+      if (!viewport) return;
+      viewport.scrollTo({
+        top: viewport.scrollHeight,
+        behavior: "smooth",
+      });
+      setShowScrollButton(false);
     });
-
-    setShowScrollButton(false);
   };
 
   useEffect(() => {
@@ -79,24 +95,42 @@ export function useScrollToBottom({
     const viewport = scrollViewportRef.current;
     if (!viewport) return;
 
-    const isScrolledToBottom =
-      viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight <
-      threshold;
+    // Use RAF to ensure measurements are accurate after DOM updates
+    requestAnimationFrame(() => {
+      if (!viewport) return;
 
-    if (isScrolledToBottom || messages[messages.length - 1]?.role === "user") {
-      scrollToBottom();
-    } else {
-      setShowScrollButton(true);
-    }
+      const { scrollTop, scrollHeight, clientHeight } = viewport;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+      if (
+        distanceFromBottom < threshold ||
+        messages[messages.length - 1]?.role === "user"
+      ) {
+        // Use nested RAF to ensure smooth scrolling after measurements
+        requestAnimationFrame(() => {
+          if (!viewport) return;
+          viewport.scrollTo({
+            top: viewport.scrollHeight,
+            behavior: "smooth",
+          });
+          setShowScrollButton(false);
+        });
+      } else {
+        setShowScrollButton(true);
+      }
+    });
   };
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const viewport = event.currentTarget;
+    if (!viewport) return;
 
-    const isScrolledToBottom =
-      viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight <
-      threshold;
-    setShowScrollButton(!isScrolledToBottom);
+    // Calculate on next frame for better performance
+    requestAnimationFrame(() => {
+      const { scrollTop, scrollHeight, clientHeight } = viewport;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setShowScrollButton(distanceFromBottom >= threshold);
+    });
   };
 
   return {

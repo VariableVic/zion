@@ -10,31 +10,33 @@ import {
 } from "@/components/ui/carousel";
 import React from "react";
 interface ProductGridProps {
+  title?: string;
   children: ReactNode;
 }
 
-export function ProductGrid({ children }: ProductGridProps) {
+export function ProductGrid({ title, children }: ProductGridProps) {
   return (
-    <div className="relative">
-      <Carousel
-        opts={{
-          align: "start",
-          loop: false,
-        }}
-        className="w-full"
-      >
-        <CarouselContent>
-          {React.Children.map(children, (child, index) => (
-            <CarouselItem className="sm:basis-1/2 md:basis-1/3 lg:basis-1/3 pl-4">
-              {child}
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
+    <Carousel
+      opts={{
+        align: "start",
+        loop: false,
+      }}
+      className="w-full space-y-4"
+    >
+      <div className="flex justify-between items-center">
+        {title && <p className="text-lg font-bold">{title}</p>}
+        <div className="flex gap-2 select-none items-center">
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />
         </div>
-      </Carousel>
-    </div>
+      </div>
+      <CarouselContent className="h-full w-full">
+        {React.Children.map(children, (child, index) => (
+          <CarouselItem className="basis md:basis-1/2 lg:basis-1/3 pl-4">
+            {child}
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   );
 }

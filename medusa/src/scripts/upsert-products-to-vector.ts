@@ -8,14 +8,7 @@ import { logger } from "@medusajs/framework";
 import { VECTOR_MODULE_KEY } from "../modules/vector";
 import VectorService from "../modules/vector/service";
 
-import {
-  Product,
-  ProductVariant,
-} from "../../.medusa/types/query-entry-points";
-
-interface VariantWithPrice extends ProductVariant {
-  calculated_price?: CalculatedPriceSet;
-}
+import { StoreProduct, StoreProductVariant } from "@medusajs/types";
 
 export default async function upsertProductsToVector({ container }: ExecArgs) {
   // Resolve services
@@ -53,8 +46,8 @@ export default async function upsertProductsToVector({ container }: ExecArgs) {
         }),
       },
     },
-  })) as {
-    data: (Product & { variants: VariantWithPrice[] })[];
+  })) as unknown as {
+    data: StoreProduct[];
     metadata: { count: number };
   };
 
@@ -86,7 +79,7 @@ export default async function upsertProductsToVector({ container }: ExecArgs) {
         subtitle: product.subtitle,
         images: product.images,
         variants: product.variants,
-        price: product.variants[0]?.calculated_price?.calculated_amount,
+        price: product?.variants?.[0]?.calculated_price?.calculated_amount,
         variants_count: product.variants?.length || 0,
         status: product.status,
         categories: product.categories?.map((category) => category?.name),

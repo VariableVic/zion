@@ -1,20 +1,12 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
-import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
-import { VECTOR_MODULE_KEY } from "../modules/vector";
+import { logger } from "@medusajs/framework";
 import {
   ContainerRegistrationKeys,
   QueryContext,
 } from "@medusajs/framework/utils";
-import {
-  CalculatedPriceSet,
-  Product,
-  ProductVariant,
-} from "../../.medusa/types/query-entry-points";
-import { logger } from "@medusajs/framework";
+import { StoreProduct } from "@medusajs/types";
+import { VECTOR_MODULE_KEY } from "../modules/vector";
 
-interface VariantWithPrice extends ProductVariant {
-  calculated_price?: CalculatedPriceSet;
-}
 export default async function syncVectorDb({
   event: { data, name },
   container,
@@ -70,8 +62,8 @@ export default async function syncVectorDb({
         }),
       },
     },
-  })) as {
-    data: (Product & { variants: VariantWithPrice[] })[];
+  })) as unknown as {
+    data: StoreProduct[];
     metadata: { count: number };
   };
 
@@ -107,7 +99,7 @@ export default async function syncVectorDb({
         subtitle: product.subtitle,
         images: product.images,
         variants: product.variants,
-        price: product.variants[0]?.calculated_price?.calculated_amount,
+        price: product?.variants?.[0]?.calculated_price?.calculated_amount,
         variants_count: product.variants?.length || 0,
         status: product.status,
         categories: product.categories?.map((category) => category?.name),

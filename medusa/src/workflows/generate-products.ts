@@ -22,6 +22,7 @@ import {
 } from "ai";
 import { z } from "zod";
 import { VECTOR_MODULE_KEY } from "../modules/vector";
+import { IVectorService } from "../types/vector";
 
 // Step 1: Fetch necessary data
 const fetchDataStep = createStep(
@@ -332,7 +333,7 @@ const upsertProductsInVectorDBStep = createStep(
   async (input: { productIds: string[] }, { container }) => {
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
     const query = container.resolve(ContainerRegistrationKeys.QUERY);
-    const vectorService = container.resolve(VECTOR_MODULE_KEY);
+    const vectorService = container.resolve<IVectorService>(VECTOR_MODULE_KEY);
     const { productIds } = input;
 
     logger.info("Fetching product data for vector database...");

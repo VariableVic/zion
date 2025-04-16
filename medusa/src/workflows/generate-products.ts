@@ -10,12 +10,13 @@ import {
   ContainerRegistrationKeys,
   Modules,
   ProductStatus,
+  QueryContext,
 } from "@medusajs/framework/utils";
 import {
   createProductsWorkflow,
   updateProductsWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { CreateProductWorkflowInputDTO } from "@medusajs/types";
+import { CreateProductWorkflowInputDTO, StoreProduct } from "@medusajs/types";
 import {
   experimental_generateImage as generateImage,
   generateObject,
@@ -336,37 +337,70 @@ const upsertProductsInVectorDBStep = createStep(
     const vectorService = container.resolve<IVectorService>(VECTOR_MODULE_KEY);
     const { productIds } = input;
 
+    const { data: regions } = await query.graph({
+      entity: "region",
+      fields: ["id", "currency_code"],
+    });
+
+    const region = regions[0];
+
     logger.info("Fetching product data for vector database...");
-    const { data: products } = await query.graph({
+    const { data: products, metadata } = (await query.graph({
       entity: "product",
       fields: [
-        "id",
-        "title",
-        "description",
-        "handle",
-        "thumbnail",
+        "*",
         "variants.*",
+        "variants.calculated_price.*", // Add this to get calculated prices
+        "tags.*",
+        "categories.*",
+        "images.*",
       ],
       filters: {
         id: productIds,
       },
-    });
+      context: {
+        variants: {
+          calculated_price: QueryContext({
+            region_id: region.id, // Replace with actual region ID
+            currency_code: region.currency_code, // Replace with actual currency code
+          }),
+        },
+      },
+    })) as unknown as {
+      data: StoreProduct[];
+      metadata: { count: number };
+    };
 
     logger.info(`Upserting ${products.length} products in vector database...`);
 
     for (const product of products) {
       logger.info(`Upserting product ${product.id} in vector database...`);
+
+      const textData = [
+        product.title,
+        product.description || "",
+        product.subtitle || "",
+        product.handle || "",
+        (product.tags || []).map((tag) => tag.value).join(" "),
+        (product.categories || []).map((category) => category?.name).join(" "),
+      ].join(" ");
+
       await vectorService.upsert({
         id: product.id,
-        data: {
+        data: textData,
+        metadata: {
+          id: product.id,
           title: product.title,
-          description: product.description,
           handle: product.handle,
           thumbnail: product.thumbnail,
+          description: product.description,
+          subtitle: product.subtitle,
+          images: product.images,
           variants: product.variants,
-        },
-        metadata: {
-          source: "generate-products-workflow",
+          price: product?.variants?.[0]?.calculated_price?.calculated_amount,
+          variants_count: product.variants?.length || 0,
+          status: product.status,
+          categories: product.categories?.map((category) => category?.name),
         },
       });
     }

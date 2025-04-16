@@ -1,17 +1,14 @@
-import { ToolResult } from "ai";
-import { ProductCard } from "../ui/product-card";
-import { ProductGrid } from "../ui/product-grid";
 import { Canvas } from "@/types";
+import { useMemo } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   CarouselVerticalScrollBar,
 } from "../ui/carousel";
-import { cn } from "@/lib/utils";
-import { useState, useMemo } from "react";
+import { ProductCard } from "../ui/product-card";
+import { ProductGrid } from "../ui/product-grid";
+
 export function ProductRecommendations({
   productRecommendations,
 }: {
@@ -25,13 +22,13 @@ export function ProductRecommendations({
   if (length === 0) {
     return null;
   }
+
   return (
     <Carousel
       orientation="vertical"
       opts={{
         align: "end",
         loop: false,
-        skipSnaps: true,
       }}
       className="h-full flex gap-4 hover:cursor-grab active:cursor-grabbing"
       setApi={(api) => {
@@ -42,9 +39,6 @@ export function ProductRecommendations({
         }
       }}
     >
-      {/* <div className="flex gap-2 select-none items-center">
-    
-      </div> */}
       <CarouselContent className="h-full">
         {productRecommendations.map(
           (productRecommendation: any, index: number) => {
@@ -66,10 +60,10 @@ export function ProductRecommendations({
                       <ProductCard
                         key={product.id}
                         id={product.variant_id}
+                        product_id={product.id}
                         name={product.title}
                         price={product.price}
                         thumbnail={product.thumbnail}
-                        images={product.images}
                         description={product.description}
                         best_option={product.best_option}
                         might_also_like={product.might_also_like}

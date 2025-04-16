@@ -28,6 +28,7 @@ export function CartButtonClient({
     () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
     [cartItems]
   );
+
   const itemRef = useRef(itemCount);
 
   useEffect(() => {

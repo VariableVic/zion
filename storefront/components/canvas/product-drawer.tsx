@@ -1,10 +1,10 @@
-import {
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerTitle,
-} from "@/components/ui/drawer";
-// import { useCart } from "@/context/cart-context";
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
+import { addToCart } from "@/lib/data/cart";
 import { cn, formatCurrency } from "@/lib/utils";
 import {
   Check,
@@ -17,12 +17,9 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
 import ReactMarkdown from "react-markdown";
-import { addToCart } from "@/lib/data/cart";
 
 interface ProductDrawerProps {
   id?: string;
@@ -38,13 +35,17 @@ export function ProductDrawer({
   name,
   description,
   price,
-  thumbnail,
   images,
 }: ProductDrawerProps) {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  // const { addItem } = useCart();
+
+  const router = useRouter();
+
+  const handleClose = () => {
+    router.back();
+  };
 
   const handleAddToCart = () => {
     if (!id) return;
@@ -69,10 +70,13 @@ export function ProductDrawer({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
       if (e.key === "ArrowRight") {
         nextImage();
       } else if (e.key === "ArrowLeft") {
         prevImage();
+      } else if (e.key === "Escape") {
+        router.back();
       }
     };
 
@@ -93,8 +97,11 @@ export function ProductDrawer({
               <Image
                 src={images[activeImage] || "/placeholder.svg"}
                 alt={name}
-                fill
                 className="object-cover"
+                quality={20}
+                width={600}
+                height={600}
+                priority
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center bg-gray-100">
@@ -139,6 +146,7 @@ export function ProductDrawer({
                     alt={`${name} thumbnail ${i}`}
                     width={64}
                     height={64}
+                    quality={20}
                     className="h-full w-full object-cover"
                   />
                 </button>
@@ -215,11 +223,9 @@ export function ProductDrawer({
                   </>
                 )}
               </Button>
-              <DrawerClose asChild>
-                <Button variant="outline" size="lg">
-                  Close
-                </Button>
-              </DrawerClose>
+              <Button variant="outline" size="lg" onClick={handleClose}>
+                Close
+              </Button>
             </div>
           </div>
         </div>

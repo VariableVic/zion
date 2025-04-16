@@ -1,10 +1,10 @@
-import type React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Mona_Sans as FontSans } from "next/font/google";
 import localFont from "next/font/local";
+import type React from "react";
 import "./globals.css";
 
 const fontSans = FontSans({
@@ -26,8 +26,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  drawer,
 }: Readonly<{
   children: React.ReactNode;
+  drawer?: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -47,6 +49,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <div id="sidebar-portal" />
+          {drawer}
         </ThemeProvider>
       </body>
     </html>

@@ -21,8 +21,6 @@ export async function addToCanvas(input: Partial<Canvas>) {
     return;
   }
 
-  const canvasCacheTag = await getCacheTag("canvas");
-
   const response = await fetch(`${baseUrl}/api/canvas/${canvasId}`, {
     method: "POST",
     body: JSON.stringify({
@@ -33,10 +31,11 @@ export async function addToCanvas(input: Partial<Canvas>) {
     },
   })
     .then((res) => res.json())
-    .then(() => {
-      revalidateTag(canvasCacheTag);
-    })
     .catch((err) => medusaError(err));
+
+  const canvasCacheTag = await getCacheTag("canvas");
+
+  revalidateTag(canvasCacheTag);
 
   return response;
 }
@@ -61,6 +60,7 @@ export async function retrieveCanvas() {
     cache: "force-cache",
   })
     .then((res) => res.json())
+    .then(({ canvas }) => canvas)
     .catch((err) => medusaError(err));
 
   return response;

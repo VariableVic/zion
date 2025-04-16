@@ -10,7 +10,9 @@ import {
 import medusaError from "../util/medusa-error";
 import { Canvas } from "@/types";
 
-const baseUrl = "http://localhost:3000";
+const baseUrl =
+  "https://" + process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+  "http://localhost:3000";
 
 export async function addToCanvas(input: Partial<Canvas>) {
   const canvasId = await getCanvasId();

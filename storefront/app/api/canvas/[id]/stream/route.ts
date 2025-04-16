@@ -2,7 +2,7 @@ import { Canvas } from "@/types";
 import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 // Initialize Redis client
 const redis = Redis.fromEnv();

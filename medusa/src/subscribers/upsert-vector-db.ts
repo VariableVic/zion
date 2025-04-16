@@ -6,12 +6,13 @@ import {
 } from "@medusajs/framework/utils";
 import { StoreProduct } from "@medusajs/types";
 import { VECTOR_MODULE_KEY } from "../modules/vector";
+import { IVectorService } from "../types/vector";
 
 export default async function syncVectorDb({
   event: { data, name },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  const vectorService = container.resolve(VECTOR_MODULE_KEY);
+  const vectorService = container.resolve<IVectorService>(VECTOR_MODULE_KEY);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
 
   let productId = data.id;

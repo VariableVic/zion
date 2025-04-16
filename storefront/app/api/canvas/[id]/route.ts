@@ -1,8 +1,8 @@
 import { Canvas } from "@/types";
 import { Redis } from "@upstash/redis";
-import { NextResponse, NextRequest } from "next/server";
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
+
 // Initialize Redis
 const redis = Redis.fromEnv();
 

@@ -52,5 +52,20 @@ module.exports = defineConfig({
         },
       },
     },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/locking-redis",
+            id: "locking-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
   ],
 });

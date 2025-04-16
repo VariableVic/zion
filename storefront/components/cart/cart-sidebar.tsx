@@ -60,7 +60,7 @@ export function CartSidebar({
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed inset-y-0 right-0 z-[9999] w-full max-w-sm border-l bg-background shadow-xl sm:w-96"
+          className="fixed inset-y-0 right-0 z-[10000] w-full max-w-sm border-l bg-background shadow-xl sm:w-96 h-full"
         >
           <div className="flex h-full flex-col" ref={sidebarRef}>
             <div className="flex items-center justify-between border-b px-4 py-3">

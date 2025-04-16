@@ -46,6 +46,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          <div id="sidebar-portal" />
         </ThemeProvider>
       </body>
     </html>

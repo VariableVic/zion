@@ -23,6 +23,9 @@ importers:
       '@medusajs/medusa':
         specifier: 2.6.1
         version: 2.6.1(c4ec963dc26e0d5c877fd2e15a9eb8aa)
+      '@medusajs/types':
+        specifier: ^2.7.0
+        version: 2.7.0(awilix@8.0.1)(ioredis@5.6.0)(vite@5.4.17(@types/node@20.17.30))
       '@mikro-orm/core':
         specifier: 6.4.3
         version: 6.4.3
@@ -1379,6 +1382,19 @@ packages:
 
   '@medusajs/types@2.6.1':
     resolution: {integrity: sha512-cysEyeh/h1D3mkYSeaoo6fjpfCqHUGTaIoPLUxU3e2oyJ5GhwdpKB4N3mdkUFBSWmuWn5x7eLAwb7DqM4UzX+w==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      awilix: ^8.0.1
+      ioredis: ^5.4.1
+      vite: ^5 || ^6
+    peerDependenciesMeta:
+      ioredis:
+        optional: true
+      vite:
+        optional: true
+
+  '@medusajs/types@2.7.0':
+    resolution: {integrity: sha512-2RRTRIDfwjmUy2MXjNmeKMnHPtu1bD7p7X+sR9Og9Ec+sNSvJczhXjA8PAX/AKXNdPLZqtO1++fdAxysc+eNRA==}
     engines: {node: '>=20'}
     peerDependencies:
       awilix: ^8.0.1
@@ -8520,6 +8536,14 @@ snapshots:
       - supports-color
 
   '@medusajs/types@2.6.1(awilix@8.0.1)(ioredis@5.6.0)(vite@5.4.17(@types/node@20.17.30))':
+    dependencies:
+      awilix: 8.0.1
+      bignumber.js: 9.2.1
+    optionalDependencies:
+      ioredis: 5.6.0
+      vite: 5.4.17(@types/node@20.17.30)
+
+  '@medusajs/types@2.7.0(awilix@8.0.1)(ioredis@5.6.0)(vite@5.4.17(@types/node@20.17.30))':
     dependencies:
       awilix: 8.0.1
       bignumber.js: 9.2.1

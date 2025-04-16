@@ -26,9 +26,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "**supabase.co",
       },
+      {
+        protocol: "http",
+        hostname: "**localhost",
+      },
     ],
-    loader: "custom",
-    loaderFile: "./lib/util/supabase-loader.ts",
+    loader: "default",
+    // loaderFile: "./lib/util/supabase-loader.ts",
   },
   experimental: {
     webpackBuildWorker: true,

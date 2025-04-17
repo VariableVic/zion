@@ -4,11 +4,13 @@ import { CartItem } from "@/components/cart/cart-item";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { addToCanvas } from "@/lib/data/canvas";
 import { formatCurrency } from "@/lib/utils";
 import { HttpTypes } from "@medusajs/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export function CartSidebar({
   cart,
@@ -20,6 +22,7 @@ export function CartSidebar({
   toggleCart: () => void;
 }) {
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -51,6 +54,18 @@ export function CartSidebar({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, toggleCart]);
+
+  const router = useRouter();
+
+  const initCheckout = async () => {
+    setIsLoading(true);
+    await addToCanvas({
+      checkout_initialized: true,
+    });
+    toggleCart();
+    router.refresh();
+    setIsLoading(false);
+  };
 
   return (
     <AnimatePresence>
@@ -124,7 +139,13 @@ export function CartSidebar({
                       {formatCurrency(cart?.total)}
                     </span>
                   </div>
-                  <Button className="mt-4 w-full">Checkout</Button>
+                  <Button
+                    className="mt-4 w-full"
+                    onClick={initCheckout}
+                    loading={isLoading}
+                  >
+                    Checkout
+                  </Button>
                 </div>
               </>
             )}

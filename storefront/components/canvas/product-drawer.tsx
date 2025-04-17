@@ -72,7 +72,6 @@ export function ProductDrawer({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      e.preventDefault();
       if (e.key === "ArrowRight") {
         nextImage();
       } else if (e.key === "ArrowLeft") {

@@ -8,5 +8,6 @@ export interface Canvas {
   }[];
   checkout_initialized: boolean;
   order: HttpTypes.StoreOrder;
+  order_open: boolean;
   lastUpdated?: number;
 }

@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setDetails } from "@/lib/data/cart";
 import { HttpTypes } from "@medusajs/types";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+
 export function DetailsForm({
   onClose,
   cart,
@@ -31,6 +31,10 @@ export function DetailsForm({
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  const isReady = useMemo(() => {
+    return data.email && data.phone;
+  }, [data.email, data.phone]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     console.log(name, value);
@@ -39,6 +43,9 @@ export function DetailsForm({
   };
 
   const handleSubmit = async () => {
+    if (!isReady) {
+      return;
+    }
     setIsLoading(true);
     await setDetails(data.email, data.phone).then(() => {
       nextStep();
@@ -88,7 +95,7 @@ export function DetailsForm({
         <Button
           className="col-span-3"
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || !isReady}
           loading={isLoading}
         >
           Continue to Shipping

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,11 +37,6 @@ export function PaymentForm({
   nextStep: () => void;
   previousStep: () => void;
 }) {
-  const total = cart?.total;
-  const clearCart = () => {
-    console.log("vic logs clear cart");
-  };
-
   const [formState, setFormState] = useState({
     cardNumber: "",
     cardName: "",
@@ -61,7 +56,21 @@ export function PaymentForm({
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onPaymentCompleted = async () => {
+  const isReady = useMemo(() => {
+    return (
+      formState.cardNumber &&
+      formState.cardName &&
+      formState.expiryMonth &&
+      formState.expiryYear &&
+      formState.cvv
+    );
+  }, [formState]);
+
+  const handlePayment = async () => {
+    if (!isReady) {
+      return;
+    }
+    setIsProcessing(true);
     await placeOrder()
       .catch((err) => {
         console.error(err);
@@ -69,25 +78,6 @@ export function PaymentForm({
       .finally(() => {
         setIsProcessing(false);
       });
-  };
-
-  const handlePayment = () => {
-    setIsProcessing(true);
-
-    onPaymentCompleted();
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      clearCart();
-      // In a real app, you would handle the payment submission and redirect to a confirmation page
-      console.log("Payment processed:", formState);
-    }, 2000);
   };
 
   const initiatePaymentSession = async () => {
@@ -195,18 +185,22 @@ export function PaymentForm({
         <div className="mt-4 rounded-lg bg-muted p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Total</span>
-            <span className="text-lg font-bold">{formatCurrency(total)}</span>
+            <span className="text-lg font-bold">
+              {formatCurrency(cart?.total || 0)}
+            </span>
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <Button
           className="w-full"
-          disabled={isProcessing}
+          disabled={isProcessing || !isReady}
           onClick={handlePayment}
           loading={isProcessing}
         >
-          {isProcessing ? "Processing..." : `Pay ${formatCurrency(total)}`}
+          {isProcessing
+            ? "Processing..."
+            : `Pay ${formatCurrency(cart?.total || 0)}`}
         </Button>
       </CardFooter>
     </Card>

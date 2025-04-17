@@ -24,10 +24,9 @@ export default async function ProductPage({
 
   const { product } = await retrieveProduct({ id: productId });
 
-  console.log("hi from product page interception");
-
   const productData = {
-    id: product.id,
+    id: product?.variants?.[0]?.id,
+    product_id: product.id,
     name: product.title,
     description: product.description || "",
     price: product?.variants?.[0]?.calculated_price?.calculated_amount || 0,

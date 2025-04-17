@@ -36,7 +36,9 @@ export function CartItem({ item }: CartItemProps) {
         <Image
           src={item.thumbnail || "/placeholder.svg"}
           alt={item.product_title || "Product"}
-          fill
+          width={80}
+          height={80}
+          quality={20}
           className={cn("object-cover", {
             "opacity-50": isUpdating,
           })}

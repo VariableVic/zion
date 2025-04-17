@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { setAddresses, setShippingMethod } from "@/lib/data/cart";
 import { HttpTypes } from "@medusajs/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function ShippingForm({
@@ -60,26 +60,29 @@ export function ShippingForm({
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
+  const isReady = useMemo(() => {
+    return (
+      shippingMethodId &&
+      data.address_1 &&
+      data.city &&
+      data.province &&
+      data.postal_code &&
+      data.country_code
+    );
+  }, [shippingMethodId, data]);
 
-    if (
-      !shippingMethodId ||
-      !data.address_1 ||
-      !data.city ||
-      !data.province ||
-      !data.postal_code ||
-      !data.country_code
-    ) {
-      setIsLoading(false);
+  const handleSubmit = async () => {
+    if (!isReady) {
       return;
     }
+
+    setIsLoading(true);
 
     await setAddresses(data);
 
     await setShippingMethod({
       cartId: cart.id,
-      shippingMethodId,
+      shippingMethodId: shippingMethodId || "",
     })
       .catch((err) => {
         setShippingMethodId(shippingMethodId || null);
@@ -226,7 +229,7 @@ export function ShippingForm({
         <Button
           className="col-span-3"
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || !isReady}
           loading={isLoading}
         >
           Continue to Payment

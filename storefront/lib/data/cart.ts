@@ -392,6 +392,7 @@ export async function placeOrder(cartId?: string) {
     await addToCanvas({
       order: cartRes.order,
       checkout_initialized: false,
+      order_open: true,
     });
     return cartRes.order;
   }

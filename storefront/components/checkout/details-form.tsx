@@ -37,9 +37,7 @@ export function DetailsForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setData((prev) => ({ ...prev, [name]: value }));
-    console.log({ data });
   };
 
   const handleSubmit = async () => {

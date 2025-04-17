@@ -52,7 +52,6 @@ export function CheckoutDrawer({
   };
 
   const nextStep = () => {
-    console.log("nextStep", currentStep);
     handleStepChange(currentStep + 1);
   };
 

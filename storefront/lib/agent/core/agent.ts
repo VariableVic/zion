@@ -50,9 +50,6 @@ export class Agent {
       tools: this.getTools(),
       maxSteps: 5,
       temperature: 1,
-      onStepFinish: async (step) => {
-        // console.log("vic logs step", step)
-      },
       onFinish: async (result) => {
         this.addMessageToHistory(result.text, "assistant");
       },
@@ -125,9 +122,11 @@ export class Agent {
           description:
             "The prompt to search for in the product vector database",
         }),
-        category: z.string({
-          description: "The name of the category to search in. Optional."
-        }).optional(),
+        category: z
+          .string({
+            description: "The name of the category to search in. Optional.",
+          })
+          .optional(),
       }),
       execute: async ({ prompt, heading, category = undefined }) => {
         const results = await this.similaritySearch(prompt, category);
@@ -254,7 +253,7 @@ export class Agent {
       data: prompt,
       topK: 6,
       includeMetadata: true,
-      filter
+      filter,
     });
     return results;
   }

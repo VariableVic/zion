@@ -25,8 +25,6 @@ export default async function ProductPage({
 
   const { product } = await retrieveProduct({ id: productId });
 
-  console.log("hi from product page");
-
   const productData = {
     id: product?.variants?.[0]?.id,
     product_id: product.id,

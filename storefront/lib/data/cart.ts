@@ -352,8 +352,6 @@ export async function setAddresses(data: Partial<HttpTypes.StoreCartAddress>) {
     throw new Error("No existing cart found when setting addresses");
   }
 
-  console.log("vic logs data from setAddresses", data);
-
   await updateCart({
     shipping_address: data,
     billing_address: data,

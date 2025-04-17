@@ -1,13 +1,21 @@
 # Zion: The Generative Storefront
-## Next.js Global Hackathon Project
+### Next.js Global Hackathon Project
 
 Welcome, Hackathon Jury! 👋
 
 The era of vibe shopping is upon us! Get ready to explore ZION, our vision for the future of e-commerce, built with Next.js, Medusa, Vercel AI SDK, Upstash, OpenAI and Supabase.
 
+Built by Victor Gerbrands ([@VariableVic](https://github.com/variablevic)) and Miljan Janjetovic ([@miljan19](https://github.com/miljan19)).
+
+**Visit the [Live Demo](https://zion-store.vercel.app/)**!
+
+https://github.com/user-attachments/assets/ac9e9e75-ed85-44e3-85ab-e7b60e6a36c4
+
+_Note: the cursor is a bit weird in the screen rec - please visit the [live demo](https://zion-store.vercel.app/) to get a better feel of performance!_
+
 ## What's Under the Hood?
 
-ZION isn't just another online shop. It's an **intelligent experience**. Instead of browsing standard product overviews, you create your own by talking to the assistant. This creates a truly personalized journey for every shopper.
+Zion isn't just another online store. It's an intelligent experience. Instead of browsing standard product overviews, you create your own by talking to the assistant. This creates a truly personalized journey for every shopper.
 
 We're leveraging powerful technologies:
 

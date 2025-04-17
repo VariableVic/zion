@@ -11,10 +11,11 @@ import {
 import React from "react";
 interface ProductGridProps {
   title?: string;
+  showNav?: boolean;
   children: ReactNode;
 }
 
-export function ProductGrid({ title, children }: ProductGridProps) {
+export function ProductGrid({ title, showNav, children }: ProductGridProps) {
   return (
     <Carousel
       opts={{
@@ -25,10 +26,10 @@ export function ProductGrid({ title, children }: ProductGridProps) {
     >
       <div className="flex justify-between items-center">
         {title && <p className="text-lg font-bold">{title}</p>}
-        <div className="flex gap-2 select-none items-center">
+        {showNav && <div className="flex gap-2 select-none items-center">
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />
-        </div>
+        </div>}
       </div>
       <CarouselContent className="h-full w-full">
         {React.Children.map(children, (child, index) => (

@@ -76,7 +76,7 @@ export function ChatInterfaceClient({
             <div className="flex flex-col gap-6 p-4 pb-20 md:p-8 chat-messages-container">
               {messages.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center space-y-4 p-8 text-center">
-                  <div className="rounded-full bg-primary/10 p-4 relative after:absolute after:inset-0 after:rounded-full after:animate-pulse after:bg-primary/20 after:blur-md after:-z-10 before:absolute before:inset-0 before:rounded-full before:animate-[ping_3s_ease-in-out_infinite] before:bg-primary/10 before:blur-sm before:-z-10">
+                  <div className="rounded-full bg-primary/10 p-6 relative after:absolute after:inset-0 after:rounded-full after:animate-pulse after:bg-primary/20 after:blur-md after:z-10 before:absolute before:inset-0 before:rounded-full before:animate-pulse before:bg-primary/10 before:blur-sm before:z-10">
                     <Bot className="h-8 w-8 text-primary" />
                   </div>
                   <h2 className="text-2xl font-bold">

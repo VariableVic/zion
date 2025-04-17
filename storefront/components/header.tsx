@@ -1,7 +1,7 @@
 import { CartButton } from "@/components/cart/cart-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, User } from "lucide-react";
+import { Bot, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -11,6 +11,9 @@ export function Header() {
       <header className="sticky h-16 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex gap-4 h-full items-center">
           <Link href="/" className="flex items-center gap-2">
+            <div className="rounded-full p-2 relative bg-primary/20">
+              <Bot className="h-6 w-6 text-primary" />
+            </div>
             <span className="font-heading text-2xl">Zion</span>
           </Link>
 

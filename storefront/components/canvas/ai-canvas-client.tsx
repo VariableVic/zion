@@ -92,7 +92,7 @@ export function AiCanvasClient({
         hasProductRecommendations && "p-6"
       )}
     >
-      {checkoutInitialized && (
+      {checkoutInitialized && hasCartItems && !hasOrder && (
         <CheckoutDrawer
           cart={cart || null}
           isOpen={checkoutOpen}

@@ -36,7 +36,7 @@ export function OrderConfirmation({ canvas }: { canvas: Canvas }) {
         {canvas?.order?.items?.slice(0, 3).map((item) => (
           <div
             key={item.id}
-            className="flex gap-4 border rounded-lg p-4 z-10 bg-background justify-center items-center w-1/2"
+            className="flex gap-4 border rounded-lg p-4 z-10 bg-background justify-between items-center w-2/3"
           >
             <Image
               src={item.thumbnail || ""}
@@ -47,10 +47,12 @@ export function OrderConfirmation({ canvas }: { canvas: Canvas }) {
               className="rounded-md"
             />
             <div className="flex flex-col gap-2 justify-end items-end">
-              <p className="text-base font-bold">{item.product_title}</p>
-              <div className="flex gap-2 justify-end text-sm">
-                <p>{item.quantity}x</p>
-                <p>{formatCurrency(item.total)}</p>
+              <p className="text-base font-bold text-right">
+                {item.product_title}
+              </p>
+              <div className="flex gap-1 justify-end text-sm">
+                <p>{item.quantity} x </p>
+                <p>{formatCurrency(item.unit_price)}</p>
               </div>
             </div>
           </div>

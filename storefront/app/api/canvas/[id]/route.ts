@@ -3,6 +3,8 @@ import { Redis } from "@upstash/redis";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 // Initialize Redis
 const redis = Redis.fromEnv();
 

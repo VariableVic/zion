@@ -1,20 +1,24 @@
 "use client";
 
 import { addToCanvas } from "@/lib/data/canvas";
+import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Canvas } from "@/types";
 import { HttpTypes } from "@medusajs/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ParticleBackground } from "../chat/particle-background";
 import { CheckoutDrawer } from "./checkout-drawer";
 import { ProductRecommendations } from "./product-recommendations";
+import Image from "next/image";
 
 export function AiCanvasClient({
   canvasId,
   cart,
+  availableShippingOptions,
 }: {
   canvasId: string;
   cart?: HttpTypes.StoreCart | null;
+  availableShippingOptions: HttpTypes.StoreCartShippingOption[] | null;
 }) {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -25,6 +29,16 @@ export function AiCanvasClient({
     });
     setCheckoutOpen(false);
   };
+
+  const hasCartItems = useMemo(
+    () => cart?.items && cart?.items?.length && cart?.items?.length > 0,
+    [cart?.items]
+  );
+
+  const hasOrder = useMemo(
+    () => canvas?.order && canvas?.order?.id,
+    [canvas?.order]
+  );
 
   useEffect(() => {
     if (!canvasId) return;
@@ -65,10 +79,10 @@ export function AiCanvasClient({
   const checkoutInitialized = canvas?.checkout_initialized;
 
   useEffect(() => {
-    if (checkoutInitialized) {
+    if (checkoutInitialized && hasCartItems) {
       setCheckoutOpen(true);
     }
-  }, [checkoutInitialized]);
+  }, [checkoutInitialized, hasCartItems]);
 
   return (
     <div
@@ -81,13 +95,75 @@ export function AiCanvasClient({
         <CheckoutDrawer
           cart={cart || null}
           isOpen={checkoutOpen}
+          availableShippingOptions={availableShippingOptions}
           onClose={() => {
             cancelCheckout();
           }}
         />
       )}
 
-      {hasProductRecommendations && !checkoutOpen && (
+      {hasOrder && (
+        <div className="flex flex-col h-full w-full items-center justify-center relative">
+          <ParticleBackground />
+          <div className="flex h-full w-full flex-col items-center justify-center space-y-4 p-8 text-center">
+            <h2 className="text-2xl font-bold">Order Confirmed</h2>
+            <p className="max-w-md text-muted-foreground">
+              Your order has been confirmed. Thank you for your purchase.
+            </p>
+            <div className="flex gap-4 border rounded-lg p-4 z-10 bg-background justify-center items-center w-1/2">
+              <p>Order Total: {formatCurrency(canvas?.order?.total || 0)}</p>
+            </div>
+            {canvas?.order?.items?.slice(0, 3).map((item) => (
+              <div
+                key={item.id}
+                className="flex gap-4 border rounded-lg p-4 z-10 bg-background justify-center items-center w-1/2"
+              >
+                <Image
+                  src={item.thumbnail || ""}
+                  alt={item.title || ""}
+                  width={50}
+                  height={50}
+                  quality={20}
+                  className="rounded-md"
+                />
+                <div className="flex flex-col gap-2 justify-end items-end">
+                  <p className="text-base font-bold">{item.product_title}</p>
+                  <div className="flex gap-2 justify-end text-sm">
+                    <p>{item.quantity}x</p>
+                    <p>{formatCurrency(item.total)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {canvas?.order?.items?.length &&
+              canvas?.order?.items?.length > 3 && (
+                <p className="text-sm text-muted-foreground">
+                  + {canvas?.order?.items?.length - 3} more items
+                </p>
+              )}
+
+            <div className="flex gap-4 border rounded-lg p-4 z-10 bg-background text-left w-2/3">
+              <p className="text-sm text-muted-foreground flex flex-col gap-2">
+                Shipping to:{" "}
+                <span className="font-bold">
+                  {canvas?.order?.shipping_address?.address_1}
+                  {", "}
+                  {canvas?.order?.shipping_address?.city}{" "}
+                </span>
+                <span className="font-bold">
+                  {canvas?.order?.shipping_address?.province}
+                  {", "}
+                  {canvas?.order?.shipping_address?.postal_code}
+                </span>
+                <span className="font-bold">
+                  {canvas?.order?.shipping_address?.country_code?.toUpperCase()}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {hasProductRecommendations && !checkoutOpen && !hasOrder && (
         <ProductRecommendations
           productRecommendations={productRecommendations}
         />

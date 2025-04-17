@@ -3,6 +3,13 @@
 import type React from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,80 +19,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { setAddresses } from "@/lib/data/cart";
+import { setAddresses, setShippingMethod } from "@/lib/data/cart";
+import { HttpTypes } from "@medusajs/types";
 import { useState } from "react";
-import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export function ShippingForm({ onClose }: { onClose: () => void }) {
-  const [formState, setFormState] = useState({
-    first_name: "",
-    last_name: "",
-    address_1: "",
-    city: "",
-    state: "",
-    zip_code: "",
-    country: "us",
-    phone: "",
-    company: "",
-    email: "",
+export function ShippingForm({
+  cart,
+  nextStep,
+  previousStep,
+  availableShippingOptions,
+}: {
+  cart: HttpTypes.StoreCart;
+  nextStep: () => void;
+  previousStep: () => void;
+  availableShippingOptions: HttpTypes.StoreCartShippingOption[];
+}) {
+  const [data, setData] = useState({
+    first_name: cart?.shipping_address?.first_name || "",
+    last_name: cart?.shipping_address?.last_name || "",
+    address_1: cart?.shipping_address?.address_1 || "",
+    city: cart?.shipping_address?.city || "",
+    province: cart?.shipping_address?.province || "",
+    postal_code: cart?.shipping_address?.postal_code || "",
+    country_code: cart?.shipping_address?.country_code || "",
   });
+  const [shippingMethodId, setShippingMethodId] = useState<string | null>(
+    cart.shipping_methods?.at(-1)?.shipping_option_id || null
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     console.log(name, value);
-    setFormState((prev) => ({ ...prev, [name]: value }));
-    console.log({ formState });
+    setData((prev) => ({ ...prev, [name]: value }));
+    console.log({ data });
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    console.log(name, value);
-    setFormState((prev) => ({ ...prev, [name]: value }));
-    console.log({ formState });
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+
+    if (
+      !shippingMethodId ||
+      !data.address_1 ||
+      !data.city ||
+      !data.province ||
+      !data.postal_code ||
+      !data.country_code
+    ) {
+      setIsLoading(false);
+      return;
+    }
+
+    await setAddresses(data);
+
+    await setShippingMethod({
+      cartId: cart.id,
+      shippingMethodId,
+    })
+      .catch((err) => {
+        setShippingMethodId(shippingMethodId || null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+    nextStep();
   };
 
   return (
-    <form
-      className="flex flex-col space-y-6 h-full"
-      action={async (formData) => {
-        await setAddresses(formState, formData);
-      }}
-    >
-      <div className="flex flex-col space-y-4">
-        <h2 className="text-base font-semibold">Contact Details</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formState.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              name="phone"
-              value={formState.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col space-y-4">
-        <h2 className="text-base font-semibold">Shipping Information</h2>
-
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Shipping Information</CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="first_name">First Name</Label>
             <Input
               id="first_name"
               name="first_name"
-              value={formState.first_name}
+              value={data.first_name}
               onChange={handleChange}
               required
             />
@@ -95,7 +112,7 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
             <Input
               id="last_name"
               name="last_name"
-              value={formState.last_name}
+              value={data.last_name}
               onChange={handleChange}
               required
             />
@@ -107,7 +124,7 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
           <Input
             id="address_1"
             name="address_1"
-            value={formState.address_1}
+            value={data.address_1}
             onChange={handleChange}
             required
           />
@@ -119,17 +136,17 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
             <Input
               id="city"
               name="city"
-              value={formState.city}
+              value={data.city}
               onChange={handleChange}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="state">State/Province</Label>
+            <Label htmlFor="province">State/Province</Label>
             <Input
-              id="state"
-              name="state"
-              value={formState.state}
+              id="province"
+              name="province"
+              value={data.province}
               onChange={handleChange}
               required
             />
@@ -140,9 +157,9 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-2">
             <Label htmlFor="zip_code">ZIP/Postal Code</Label>
             <Input
-              id="zip_code"
-              name="zip_code"
-              value={formState.zip_code}
+              id="postal_code"
+              name="postal_code"
+              value={data.postal_code}
               onChange={handleChange}
               required
             />
@@ -150,9 +167,11 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-2">
             <Label htmlFor="country">Country</Label>
             <Select
-              name="country"
-              value={formState.country}
-              onValueChange={(value) => handleSelectChange("country", value)}
+              name="country_code"
+              value={data.country_code}
+              onValueChange={(value) =>
+                handleSelectChange("country_code", value)
+              }
             >
               <SelectTrigger id="country">
                 <SelectValue placeholder="Select country" />
@@ -166,21 +185,53 @@ export function ShippingForm({ onClose }: { onClose: () => void }) {
             </Select>
           </div>
         </div>
-      </div>
-      <Separator />
-      <div className="grid grid-cols-4 gap-2 items-end">
+        <div className="space-y-2">
+          <Label htmlFor="shipping_option">Shipping Option</Label>
+          <RadioGroup
+            name="shipping_option"
+            value={shippingMethodId || ""}
+            onValueChange={(value) => setShippingMethodId(value)}
+            className="flex gap-2"
+          >
+            {availableShippingOptions.map((option) => (
+              <div
+                key={option.id}
+                className="flex items-center space-x-2 p-4 border rounded-lg cursor-pointer group group-hover:border-white group-hover:bg-white group-hover:text-black group-hover:cursor-pointer"
+                onClick={() => setShippingMethodId(option.id)}
+              >
+                <RadioGroupItem value={option.id} id={option.id} />
+                <Label
+                  htmlFor={option.id}
+                  className="flex gap-2 items-center group cursor-pointer"
+                >
+                  {option.name}
+                  <span className="text-xs  bg-primary text-foreground px-1 cursor-pointer">
+                    Free
+                  </span>
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between">
         <Button
           variant="outline"
-          onClick={onClose}
+          onClick={previousStep}
           className="col-span-1"
           type="button"
         >
-          Cancel
+          Back to Details
         </Button>
-        <Button type="submit" className="col-span-3">
+        <Button
+          className="col-span-3"
+          onClick={handleSubmit}
+          disabled={isLoading}
+          loading={isLoading}
+        >
           Continue to Payment
         </Button>
-      </div>
-    </form>
+      </CardFooter>
+    </Card>
   );
 }

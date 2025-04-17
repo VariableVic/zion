@@ -32,7 +32,7 @@ export function CartButtonClient({
   const itemRef = useRef(itemCount);
 
   useEffect(() => {
-    if (itemCount !== itemRef.current) {
+    if (itemCount !== itemRef.current && itemCount > 0) {
       setIsCartOpen(true);
     }
     itemRef.current = itemCount;

@@ -14,6 +14,7 @@ import {
   setCartId,
 } from "./cookies";
 import { getRegion } from "./regions";
+import { addToCanvas } from "./canvas";
 ``;
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
@@ -332,58 +333,31 @@ export async function submitPromotionForm(
   }
 }
 
-// TODO: Pass a POJO instead of a form entity here
-export async function setAddresses(currentState: unknown, formData: FormData) {
-  try {
-    if (!formData) {
-      throw new Error("No form data found when setting addresses");
-    }
-    const cartId = getCartId();
-    if (!cartId) {
-      throw new Error("No existing cart found when setting addresses");
-    }
-
-    console.log({ formData });
-    console.log(formData.get("country"));
-
-    const data = {
-      shipping_address: {
-        first_name: formData.get("first_name"),
-        last_name: formData.get("last_name"),
-        address_1: formData.get("address_1"),
-        address_2: "",
-        postal_code: formData.get("zip_code"),
-        city: formData.get("city"),
-        country_code: formData.get("country"),
-        province: formData.get("state"),
-        phone: formData.get("phone"),
-      },
-      email: formData.get("email"),
-    } as any;
-
-    const sameAsBilling = "on";
-    if (sameAsBilling === "on") data.billing_address = data.shipping_address;
-
-    if (sameAsBilling !== "on")
-      data.billing_address = {
-        first_name: formData.get("billing_address.first_name"),
-        last_name: formData.get("billing_address.last_name"),
-        address_1: formData.get("billing_address.address_1"),
-        address_2: "",
-        postal_code: formData.get("billing_address.postal_code"),
-        city: formData.get("billing_address.city"),
-        country_code: formData.get("billing_address.country_code"),
-        province: formData.get("billing_address.province"),
-        phone: formData.get("billing_address.phone"),
-      };
-    await updateCart(data);
-  } catch (e: any) {
-    return e.message;
+export async function setDetails(email: string, phone: string) {
+  const cartId = await getCartId();
+  if (!cartId) {
+    throw new Error("No existing cart found when setting details");
   }
 
-  redirect(
-    `/${formData.get("shipping_address.country_code")}/checkout?step=delivery`
-  );
+  await updateCart({
+    email,
+    shipping_address: { phone },
+    billing_address: { phone },
+  });
+}
+
+export async function setAddresses(data: Partial<HttpTypes.StoreCartAddress>) {
+  const cartId = await getCartId();
+  if (!cartId) {
+    throw new Error("No existing cart found when setting addresses");
+  }
+
+  console.log("vic logs data from setAddresses", data);
+
+  await updateCart({
+    shipping_address: data,
+    billing_address: data,
+  }).catch(medusaError);
 }
 
 /**
@@ -415,7 +389,11 @@ export async function placeOrder(cartId?: string) {
     const countryCode =
       cartRes.order.shipping_address?.country_code?.toLowerCase();
     removeCartId();
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`);
+    await addToCanvas({
+      order: cartRes.order,
+      checkout_initialized: false,
+    });
+    return cartRes.order;
   }
 
   return cartRes.cart;

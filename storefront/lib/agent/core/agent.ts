@@ -196,15 +196,21 @@ export class Agent {
       parameters: z.object({}),
       execute: async () => {
         try {
-          await addToCanvas({
-            checkout_initialized: true,
-          });
+          const cart = await retrieveCart();
+
+          if (cart?.items?.length && cart?.items?.length > 0) {
+            await addToCanvas({
+              checkout_initialized: true,
+            });
+
+            return "Checkout initialized";
+          }
+
+          return "No items in cart. Add items to the cart before initializing the checkout process.";
         } catch (error) {
           console.error("Error adding to canvas", error);
           return "Error initializing checkout because of: " + error;
         }
-
-        return "Checkout initialized";
       },
     });
   }

@@ -6,6 +6,7 @@ import {
   CarouselItem,
   CarouselVerticalScrollBar,
 } from "../ui/carousel";
+import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures'
 import { ProductCard } from "../ui/product-card";
 import { ProductGrid } from "../ui/product-grid";
 
@@ -29,6 +30,7 @@ export function ProductRecommendations({
       opts={{
         align: "end",
         loop: false,
+        skipSnaps: true
       }}
       className="h-full flex gap-4 hover:cursor-grab active:cursor-grabbing"
       setApi={(api) => {
@@ -38,6 +40,7 @@ export function ProductRecommendations({
           });
         }
       }}
+      plugins={[WheelGesturesPlugin()]}
     >
       <CarouselContent className="h-full">
         {productRecommendations.map(

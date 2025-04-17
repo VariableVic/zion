@@ -58,6 +58,7 @@ export function ProductRecommendations({
                   <ProductGrid
                     key="product-grid"
                     title={productRecommendation.heading}
+                    showNav={productRecommendation.products.length > 3}
                   >
                     {productRecommendation.products.map((product: any) => (
                       <ProductCard

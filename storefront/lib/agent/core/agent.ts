@@ -125,9 +125,12 @@ export class Agent {
           description:
             "The prompt to search for in the product vector database",
         }),
+        category: z.string({
+          description: "The name of the category to search in. Optional."
+        }).optional(),
       }),
-      execute: async ({ prompt, heading }) => {
-        const results = await this.similaritySearch(prompt);
+      execute: async ({ prompt, heading, category = undefined }) => {
+        const results = await this.similaritySearch(prompt, category);
         const isBestSellers = heading.includes("Best Sellers");
 
         const products = results
@@ -245,11 +248,13 @@ export class Agent {
     });
   }
 
-  private async similaritySearch(prompt: string) {
+  private async similaritySearch(prompt: string, category?: string) {
+    const filter = category ? `categories CONTAINS '${category}'` : undefined;
     const results = await this.index.query({
       data: prompt,
       topK: 6,
       includeMetadata: true,
+      filter
     });
     return results;
   }
@@ -281,6 +286,7 @@ Use tools instead of manual responses for product recommendations or clarificati
 
 - followUpPromptSuggestions: Use this to give the user follow up prompt suggestions. This will render buttons in the chat for the user to select from for a quick response.
 - getProductRecommendations: Use this to retrieve product recommendations. You'll receive an array of objects with product properties like: id, title, description, price, thumbnail. These will render as a visual product grid outside of your context.
+Try to figure out if the user is looking in one of these categories: "Sofas, Chairs, Shelves, Tables, Lamps". If you are confident enough pass it as a parameter to the tool. 
 Important: When using this tool, introduce the results briefly, e.g.:
 "I've added a few pieces that might interest you to the canvas."
 Do not describe or list the results — just call the tool.

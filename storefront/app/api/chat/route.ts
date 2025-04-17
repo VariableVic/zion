@@ -1,6 +1,6 @@
 import { Agent } from "../../../lib/agent/core/agent";
 
-// Allow streaming responses up to 30 seconds
+export const runtime = "edge";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {

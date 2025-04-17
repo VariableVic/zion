@@ -35,7 +35,7 @@ export function CategoryBar({
   };
 
   return (
-    <div className="flex p-4 items-center border-b border-border justify-between">
+    <div className="hidden sm:flex p-4 items-center border-b border-border justify-between">
       <div className="flex gap-4 items-center">
         <p className="text-md font-bold">Categories</p>
         <div className="flex flex-wrap gap-2">

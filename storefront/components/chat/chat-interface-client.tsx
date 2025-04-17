@@ -2,6 +2,7 @@
 
 import { CategoryBar } from "@/components/chat/category-bar";
 import { ChatMessage } from "@/components/chat/chat-message";
+import { ParticleBackground } from "@/components/chat/particle-background";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,7 @@ export function ChatInterfaceClient({
   };
 
   return (
-    <Card className="overflow-hidden w-1/2">
+    <Card className="overflow-hidden w-full sm:w-1/2">
       <CategoryBar
         categories={categories}
         handleOptionClick={handleOptionClick}
@@ -81,15 +82,19 @@ export function ChatInterfaceClient({
                   <h2 className="text-2xl font-bold">
                     Welcome to Zion: The Generative Storefront
                   </h2>
-                  <p className="max-w-md text-muted-foreground">
+                  <p className="hidden sm:block max-w-md text-muted-foreground">
                     Ask me to recommend products, find items that match your
                     needs, or help you check out.
                   </p>
-                  <p className="max-w-md text-muted-foreground">
+                  <p className="hidden sm:block max-w-md text-muted-foreground">
                     I'm currently connected to a{" "}
                     <strong>vintage furniture store</strong>.
                   </p>
-                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  <p className="block sm:hidden max-w-md text-muted-foreground">
+                    I'm not optimized for mobile devices yet. Please use a
+                    desktop computer to chat with me.
+                  </p>
+                  <div className="hidden sm:flex mt-4 flex-wrap justify-center gap-2">
                     {suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
@@ -160,7 +165,7 @@ export function ChatInterfaceClient({
           </Button>
         )}
 
-        <div className="border-t bg-background p-4 sticky bottom-0">
+        <div className="hidden sm:block border-t bg-background p-4 sticky bottom-0">
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
             <Input
               placeholder="Ask about products or for shopping assistance..."

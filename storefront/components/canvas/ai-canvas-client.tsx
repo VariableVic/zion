@@ -88,7 +88,7 @@ export function AiCanvasClient({
   return (
     <div
       className={cn(
-        "flex flex-col h-full w-1/2 overflow-hidden space-y-4 rounded-lg border scroll-smooth",
+        "hidden sm:flex flex-col h-full w-1/2 overflow-hidden space-y-4 rounded-lg border scroll-smooth",
         hasProductRecommendations && "p-6"
       )}
     >

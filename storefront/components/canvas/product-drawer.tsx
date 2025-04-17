@@ -15,6 +15,7 @@ import {
   PlusCircle,
   Share2,
   ShoppingCart,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -40,6 +41,7 @@ export function ProductDrawer({
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const router = useRouter();
 
@@ -92,19 +94,26 @@ export function ProductDrawer({
       <div className="grid md:grid-cols-2 gap-6 p-6 max-h-full overflow-y-hidden">
         {/* Image gallery */}
         <div className="relative h-[75%]">
-          <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100 h-full">
+          <div className="aspect-square relative rounded-lg overflow-hidden h-full">
+            {!isImageLoaded && (
+              <div className="h-full w-full flex items-center justify-center">
+                <Loader2 className="h-5 w-5 animate-spin" />
+              </div>
+            )}
             {images.length > 0 ? (
               <Image
                 src={images[activeImage] || "/placeholder.svg"}
                 alt={name}
                 className="object-cover"
-                quality={20}
-                width={600}
-                height={600}
+                quality={30}
+                fill
                 priority
+                onLoad={() => {
+                  setIsImageLoaded(true);
+                }}
               />
             ) : (
-              <div className="h-full w-full flex items-center justify-center bg-gray-100">
+              <div className="h-full w-full flex items-center justify-center">
                 <span className="text-gray-400">No image available</span>
               </div>
             )}

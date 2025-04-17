@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { addToCart } from "@/lib/data/cart";
 import { cn, formatCurrency } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Check, Search, ShoppingCart, Stars } from "lucide-react";
+import { Check, Loader2, Search, ShoppingCart, Stars } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -72,12 +72,18 @@ export function ProductCard({
           prefetch={true}
         >
           <div className="w-full h-fit aspect-square overflow-hidden relative group cursor-pointer">
+            {!loaded && (
+              <div className="h-full w-full flex items-center justify-center">
+                <Loader2 className="h-5 w-5 animate-spin" />
+              </div>
+            )}
+
             <Image
               src={thumbnail || "/placeholder.svg"}
               alt={name}
-              width={210}
-              height={210}
-              quality={20}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              fill
+              quality={50}
               priority
               className={cn(
                 "h-full w-full object-cover transition-all duration-100 group-hover:scale-105",

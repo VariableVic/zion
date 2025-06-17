@@ -7,7 +7,7 @@ The era of vibe shopping is upon us! Get ready to explore ZION, our vision for t
 
 Built by Victor Gerbrands ([@VariableVic](https://github.com/variablevic)) and Miljan Janjetovic ([@miljan19](https://github.com/miljan19)).
 
-**Visit the [Live Demo](https://zion-store.vercel.app/)**! In the demo, Zion is selling vintage furniture, but it could be connected to any Medusa store.
+**Visit the ~[Live Demo](#)~**! In the demo, Zion is selling vintage furniture, but it could be connected to any Medusa store.
 
 https://github.com/user-attachments/assets/ac9e9e75-ed85-44e3-85ab-e7b60e6a36c4
 

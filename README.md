@@ -11,7 +11,7 @@ Built by Victor Gerbrands ([@VariableVic](https://github.com/variablevic)) and M
 
 https://github.com/user-attachments/assets/ac9e9e75-ed85-44e3-85ab-e7b60e6a36c4
 
-_Note: the cursor is a bit weird in the screen rec - please visit the [live demo](https://zion-store.vercel.app/) to get a better feel of performance!_
+_Note: the cursor is a bit weird in the screen rec - please visit the ~[live demo](#)~ to get a better feel of performance!_
 
 ## What's Under the Hood?
 
